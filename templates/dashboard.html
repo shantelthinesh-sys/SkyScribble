@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.main-panel { padding: 32px 32px 0 32px; }
+.dashboard-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+.dashboard-header h1 { margin: 0; font-size: 1.6rem; color: #eaf2ff; }
+.teacher-tools { display: flex; gap: 10px; flex-wrap: wrap; }
+.main-btn { background: linear-gradient(135deg,#3f8bff,#2850d4); color: #eef4ff; border: 1px solid rgba(123,171,255,0.42); border-radius: 9px; padding: 9px 18px; font-weight: 700; cursor: pointer; }
+.main-btn:hover { opacity: 0.88; }
+.dashboard-content { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 32px; align-items: stretch; }
+.dashboard-section { background: #0d1b33; border: 1px solid #1a2e50; border-radius: 14px; padding: 22px 20px; cursor: pointer; transition: background 0.18s, transform 0.12s; }
+.dashboard-section:hover, .dashboard-section:focus { background: #16203a; outline: none; transform: translateY(-2px) scale(1.012); }
+.dashboard-section h2 { margin-top: 0; font-size: 1.35rem; color: #9bc2ff; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.dashboard-section ul { padding-left: 18px; color: #a3b6d6; font-size: 1.08rem; }
+.dashboard-section .add-note { display: flex; gap: 8px; margin-top: 12px; }
+.dashboard-section .add-note input { flex: 1; padding: 7px 10px; border-radius: 6px; border: 1px solid #232b3d; background: #1a223a; color: #e6eaf3; }
+.dashboard-section .note-list { margin-top: 10px; color: #e6eaf3; font-size: 0.98rem; }
+.due-date { color: #7fffa1; font-weight: 600; margin-left: 8px; }
+.due-date.muted { color: #6c7a92; }
+.animate-fadein { animation: fadein 0.7s cubic-bezier(.4,2,.6,1); }
+.animate-slidein { animation: slidein 0.7s cubic-bezier(.4,2,.6,1); }
+.animate-card { animation: cardin 0.8s cubic-bezier(.4,2,.6,1); }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slidein { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+@keyframes cardin { from { opacity: 0; transform: scale(0.98) translateY(24px); } to { opacity: 1; transform: none; } }
+@media (max-width: 900px) { .main-panel { padding: 16px 8px 0 8px; } }
+</style>
+<div class="main-panel animate-fadein">
+	<div class="dashboard-header animate-slidein">
+		<h1 id="welcomeTitle">Welcome to Your Dashboard</h1>
+		<div class="teacher-tools">
+			<button class="main-btn" onclick="window.location.href='/draw?studio=image-generator'">Drawing Studio</button>
+			<button class="main-btn" onclick="window.location.href='/draw?studio=video-animation'">Video Animation</button>
+			<button class="main-btn" onclick="window.location.href='/draw?studio=2d-model'">2D Model</button>
+			<button class="main-btn" onclick="window.location.href='/draw?studio=3d-model'">3D Model</button>
+			<button class="main-btn" onclick="window.location.href='/draw?studio=3d-animation'">3D Animation</button>
+		</div>
+	</div>
+	<div class="dashboard-content">
+		<section class="dashboard-section animate-card" id="classes" tabindex="0" onclick="window.location.href='/classes'">
+			<h2>My Classes</h2>
+			<ul id="classList">
+				<li>Grade 7A</li>
+				<li>Grade 8B</li>
+			</ul>
+			<div class="add-note">
+				<input type="text" id="classInput" placeholder="Add new class (e.g. Grade 7A)" />
+				<button class="main-btn" onclick="addClass();event.stopPropagation();">Add</button>
+			</div>
+		</section>
+		<section class="dashboard-section animate-card" id="assignments" tabindex="0" onclick="window.location.href='/assignments'">
+			<h2>Assignments</h2>
+			<ul>
+				<li>Art Project: "Spring Nature" <span class="due-date">Due: 2026-03-30</span></li>
+				<li>Homework: "Draw Your Pet" <span class="due-date muted">Due: 2026-04-05</span></li>
+			</ul>
+		</section>
+		<section class="dashboard-section animate-card" id="annotation" tabindex="0" onclick="window.location.href='/annotation'">
+			<h2>Annotation Tools</h2>
+			<div style="display:flex;gap:10px;flex-wrap:wrap;">
+				<button class="main-btn" onclick="addNote();event.stopPropagation();">Add Note</button>
+				<button class="main-btn" onclick="highlightText();event.stopPropagation();">Highlight</button>
+				<button class="main-btn" onclick="attachFile();event.stopPropagation();">Attach File</button>
+			</div>
+			<div class="add-note" style="margin-top:12px;">
+				<input type="text" id="noteInput" placeholder="Type a note..." />
+				<button class="main-btn" onclick="saveNote();event.stopPropagation();">Save</button>
+			</div>
+			<div class="note-list" id="noteList"></div>
+		</section>
+		<section class="dashboard-section animate-card" id="resources" tabindex="0" onclick="window.location.href='/resources'">
+			<h2>Resources</h2>
+			<ul>
+				<li><a href="#" onclick="event.stopPropagation();">Lesson Plan Template</a></li>
+				<li><a href="#" onclick="event.stopPropagation();">Student Progress Sheet</a></li>
+			</ul>
+		</section>
+	</div>
+</div>
+<script>
+document.querySelectorAll('.dashboard-section button, .dashboard-section input, .dashboard-section a').forEach(function(el) {
+  el.addEventListener('click', function(e) { e.stopPropagation(); });
+});
+</script>
+{% endblock %}

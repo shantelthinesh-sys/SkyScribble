@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyScribble Teacher Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #0a1124;
+      --bg-2: #1a223a;
+      --sidebar: #10182c;
+      --panel: rgba(18, 28, 48, 0.92);
+      --line: rgba(83, 136, 255, 0.18);
+      --text: #f4f8ff;
+      --muted: #a3b6d6;
+      --accent-a: #4f9cff;
+      --accent-b: #2850d4;
+      --danger: #ff9a9a;
+      --success: #7fffa1;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Sora", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(70rem 30rem at -10% -20%, #0f3573 8%, transparent 54%),
+        radial-gradient(55rem 25rem at 115% 8%, #1a285a 4%, transparent 56%),
+        linear-gradient(155deg, var(--bg-1), var(--bg-2));
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 36px 0 24px 0;
+      border-right: 1.5px solid var(--line);
+      min-height: 100vh;
+      box-shadow: 2px 0 16px 0 rgba(0,0,0,0.08);
+      z-index: 2;
+    }
+    .sidebar .logo {
+      width: 120px;
+      margin-bottom: 32px;
+    }
+    .sidebar nav {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .sidebar nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 13px 32px;
+      border-radius: 10px 0 0 10px;
+      transition: background 0.18s;
+      font-size: 1.08rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar nav a.active, .sidebar nav a:hover {
+      background: linear-gradient(90deg, var(--accent-a) 0%, transparent 100%);
+      color: #fff;
+    }
+    .sidebar .user {
+      margin-top: auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.98rem;
+      margin-bottom: 10px;
+    }
+    .sidebar .logout-btn {
+      margin-top: 8px;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--danger);
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .sidebar .logout-btn:hover {
+      background: rgba(255, 154, 154, 0.08);
+    }
+
+    .main-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: var(--panel);
+      padding: 0 0 0 0;
+    }
+    .dashboard-header {
+      padding: 36px 48px 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dashboard-header h1 {
+      font-size: 2.1rem;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .dashboard-header .teacher-tools {
+      display: flex;
+      gap: 18px;
+    }
+    .dashboard-header .teacher-tools button {
+      background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px 0 rgba(79,156,255,0.08);
+      transition: background 0.18s;
+    }
+    .dashboard-header .teacher-tools button:hover {
+      background: linear-gradient(90deg, var(--accent-b), var(--accent-a));
+    }
+
+    .dashboard-content {
+      display: flex;
+      gap: 32px;
+      padding: 32px 48px 48px 48px;
+      flex-wrap: wrap;
+    }
+    .dashboard-section {
+      flex: 1 1 340px;
+      background: rgba(18, 28, 48, 0.98);
+      border-radius: 18px;
+      box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+      padding: 28px 24px 24px 24px;
+      min-width: 320px;
+      margin-bottom: 18px;
+    }
+    .dashboard-section h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      color: #9bc2ff;
+      margin-bottom: 12px;
+    }
+    .dashboard-section ul {
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+    .dashboard-section .annotation-tools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .dashboard-section .annotation-tools button {
+      background: var(--accent-a);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 7px 14px;
+      font-weight: 600;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .dashboard-section .annotation-tools button:hover {
+      background: var(--accent-b);
+    }
+    .dashboard-section .note-list {
+      margin-top: 10px;
+      color: var(--text);
+      font-size: 0.98rem;
+    }
+    .dashboard-section .note-item {
+      background: rgba(44, 64, 110, 0.18);
+      border-radius: 6px;
+      padding: 7px 10px;
+      margin-bottom: 6px;
+    }
+    .dashboard-section .add-note {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .dashboard-section .add-note input {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #1a223a;
+      color: var(--text);
+    }
+    .dashboard-section .add-note button {
+      background: var(--accent-b);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    @media (max-width: 1200px) {
+      .dashboard-content { flex-direction: column; gap: 0; padding: 24px 8px; }
+      .dashboard-section { min-width: unset; }
+      .dashboard-header { padding: 24px 12px 0 12px; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .main-panel { padding: 0; }
+      .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .dashboard-content { padding: 12px 2px; }
+    }
+    html, body {
+      height: 100%;
+      width: 100vw;
+      overflow-x: hidden;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    .main-panel {
+      min-height: 100vh;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    .dashboard-header {
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+    .dashboard-content {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    @media (max-width: 900px) {
+      .dashboard-header, .dashboard-content {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .sidebar {
+        min-width: 60px;
+        width: 60px;
+        padding: 12px 0;
+      }
+      .sidebar nav a span { display: none; }
+      .sidebar nav a { padding: 13px 10px; font-size: 1.1rem; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .main-panel { padding: 0; }
+      .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .dashboard-content { padding: 12px 2px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <img src="/assets/logo.svg" alt="SkyScribble logo" class="logo" />
+    <nav>
+      <a href="/dashboard" class="active"><span>🏠</span> Dashboard</a>
+    </nav>
+    <div class="user" id="sidebarUser">Welcome, Teacher</div>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </div>
+
+  <div class="main-panel">
+    <div class="dashboard-header">
+      <h1 id="welcomeTitle">Teacher Dashboard</h1>
+      <div class="teacher-tools">
+        <button onclick="window.location.href='/draw?studio=image-generator'">Open Drawing Studio</button>
+        <button onclick="window.location.href='/draw?studio=video-animation'">Video Animation</button>
+        <button onclick="window.location.href='/draw?studio=2d-model'">2D Model</button>
+        <button onclick="window.location.href='/draw?studio=3d-model'">3D Model</button>
+        <button onclick="window.location.href='/draw?studio=3d-animation'">3D Animation</button>
+      </div>
+    </div>
+    <div class="dashboard-content">
+      <section class="dashboard-section" id="classes">
+        <h2><span style="font-size:1.2em;vertical-align:middle;">📚</span> My Classes</h2>
+        <ul id="classList"></ul>
+        <div class="add-note" style="margin-top:12px;">
+          <input type="text" id="classInput" placeholder="Add new class (e.g. Grade 7A)" />
+          <button onclick="addClass()">Add</button>
+        </div>
+      </section>
+      <section class="dashboard-section" id="assignments">
+        <h2>Assignments</h2>
+        <ul>
+          <li>Art Project: "Spring Nature" <span style="color:var(--success)">Due: 2026-03-30</span></li>
+          <li>Homework: "Draw Your Pet" <span style="color:var(--muted)">Due: 2026-04-05</span></li>
+        </ul>
+      </section>
+      <section class="dashboard-section" id="annotation">
+        <h2><span style="font-size:1.2em;vertical-align:middle;">📝</span> Annotation Tools</h2>
+        <div class="annotation-tools">
+          <button onclick="addNote()">📝 Add Note</button>
+          <button onclick="highlightText()">🔦 Highlight</button>
+          <button onclick="attachFile()">📎 Attach File</button>
+        </div>
+        <div class="add-note">
+          <input type="text" id="noteInput" placeholder="Type a note..." />
+          <button onclick="saveNote()">Save</button>
+        </div>
+        <div class="note-list" id="noteList"></div>
+      </section>
+      <section class="dashboard-section" id="resources">
+        <h2><span style="font-size:1.2em;vertical-align:middle;">📂</span> Resources</h2>
+        <ul>
+          <li><a href="#" style="color:var(--accent-a)"><span style="font-size:1.1em;">📄</span> Lesson Plan Template</a></li>
+          <li><a href="#" style="color:var(--accent-a)"><span style="font-size:1.1em;">📊</span> Student Progress Sheet</a></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Session and user greeting
+    const welcomeTitle = document.getElementById("welcomeTitle");
+    const sidebarUser = document.getElementById("sidebarUser");
+    const logoutBtn = document.getElementById("logoutBtn");
+    function getSession() {
+      try {
+        return JSON.parse(localStorage.getItem("skyscribble_session") || "null");
+      } catch {
+        return null;
+      }
+    }
+    const session = getSession();
+    if (!session || !session.email) {
+      sidebarUser.textContent = "Please log in. Redirecting...";
+      setTimeout(() => { window.location.href = "/login"; }, 900);
+    } else {
+      welcomeTitle.textContent = `Welcome, ${session.name || session.email}`;
+      sidebarUser.textContent = `Welcome, ${session.name || session.email}`;
+    }
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("skyscribble_session");
+      window.location.href = "/login";
+    });
+
+    // Annotation tools logic (edit/delete)
+    function addNote() {
+      document.getElementById('noteInput').focus();
+    }
+    function highlightText() {
+      alert('Highlight tool coming soon!');
+    }
+    function attachFile() {
+      alert('Attach file feature coming soon!');
+    }
+    function saveNote() {
+      const input = document.getElementById('noteInput');
+      const note = input.value.trim();
+      if (!note) return;
+      let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+      notes.push(note);
+      localStorage.setItem('teacher_notes', JSON.stringify(notes));
+      input.value = '';
+      renderNotes();
+    }
+    function editNote(idx) {
+      let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+      const newNote = prompt('Edit note:', notes[idx]);
+      if (newNote !== null) {
+        notes[idx] = newNote;
+        localStorage.setItem('teacher_notes', JSON.stringify(notes));
+        renderNotes();
+      }
+    }
+    function deleteNote(idx) {
+      let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+      notes.splice(idx, 1);
+      localStorage.setItem('teacher_notes', JSON.stringify(notes));
+      renderNotes();
+    }
+    function renderNotes() {
+      const noteList = document.getElementById('noteList');
+      let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+      noteList.innerHTML = notes.map((n,i) => `<div class='note-item'>${n} <span style='float:right;'><button onclick='editNote(${i})' title='Edit' style='background:none;border:none;color:#4f9cff;cursor:pointer;font-size:1em;'>✏️</button> <button onclick='deleteNote(${i})' title='Delete' style='background:none;border:none;color:#ff9a9a;cursor:pointer;font-size:1em;'>🗑️</button></span></div>`).join('');
+    }
+
+    // Class management logic
+    function addClass() {
+      const input = document.getElementById('classInput');
+      const className = input.value.trim();
+      if (!className) return;
+      let classes = JSON.parse(localStorage.getItem('teacher_classes') || '[]');
+      classes.push({ name: className, status: 'Active' });
+      localStorage.setItem('teacher_classes', JSON.stringify(classes));
+      input.value = '';
+      renderClasses();
+    }
+    function removeClass(idx) {
+      let classes = JSON.parse(localStorage.getItem('teacher_classes') || '[]');
+      classes.splice(idx, 1);
+      localStorage.setItem('teacher_classes', JSON.stringify(classes));
+      renderClasses();
+    }
+    function renderClasses() {
+      const classList = document.getElementById('classList');
+      let classes = JSON.parse(localStorage.getItem('teacher_classes') || '[]');
+      if (classes.length === 0) {
+        classList.innerHTML = `<li style='color:var(--muted)'>No classes yet. Add one!</li>`;
+        return;
+      }
+      classList.innerHTML = classes.map((c,i) => `<li><span style='font-size:1.1em;'>🏫</span> ${c.name} - <span style='color:var(--success)'>${c.status}</span> <button onclick='removeClass(${i})' title='Remove' style='background:none;border:none;color:#ff9a9a;cursor:pointer;font-size:1em;margin-left:8px;'>🗑️</button></li>`).join('');
+    }
+
+    // Initial render
+    renderNotes();
+    renderClasses();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+2026-03-25 14:01:48,891 INFO Starting SkyScribble server...
+2026-03-25 14:01:49,446 INFO Imported web_app OK
+2026-03-25 14:01:49,455 INFO App created OK
+2026-03-25 14:01:49,455 INFO Template folder: C:\Users\HP\skyscribble\templates
+2026-03-25 14:01:49,456 INFO Static folder: C:\Users\HP\skyscribble\assets
+2026-03-25 14:01:49,457 INFO Server running at http://127.0.0.1:5000
+2026-03-25 14:01:49,489 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-25 14:01:49,490 INFO [33mPress CTRL+C to quit[0m
+2026-03-25 14:08:54,294 INFO Starting SkyScribble server...
+2026-03-25 14:08:54,793 INFO Imported web_app OK
+2026-03-25 14:08:54,802 INFO App created OK
+2026-03-25 14:08:54,802 INFO Template folder: C:\Users\HP\skyscribble\templates
+2026-03-25 14:08:54,802 INFO Static folder: C:\Users\HP\skyscribble\assets
+2026-03-25 14:08:54,802 INFO Server running at http://127.0.0.1:5000
+2026-03-25 14:08:54,852 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-25 14:08:54,856 INFO [33mPress CTRL+C to quit[0m
+2026-03-25 14:10:55,097 INFO Starting SkyScribble server...
+2026-03-25 14:10:55,650 INFO Imported web_app OK
+2026-03-25 14:10:55,658 INFO App created OK
+2026-03-25 14:10:55,658 INFO Template folder: C:\Users\HP\skyscribble\templates
+2026-03-25 14:10:55,658 INFO Static folder: C:\Users\HP\skyscribble\assets
+2026-03-25 14:10:55,658 INFO Server running at http://127.0.0.1:5000
+2026-03-25 14:10:55,706 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-03-25 14:10:55,706 INFO [33mPress CTRL+C to quit[0m
+2026-03-25 14:10:55,930 INFO 200 200 OK
+2026-03-25 14:10:55,930 INFO 127.0.0.1 - - [25/Mar/2026 14:10:55] "GET / HTTP/1.1" 200 -
+2026-03-25 14:10:55,982 INFO 200 200 OK
+2026-03-25 14:10:55,982 INFO 127.0.0.1 - - [25/Mar/2026 14:10:55] "GET /api/health HTTP/1.1" 200 -
+2026-03-25 14:10:56,081 INFO 304 304 NOT MODIFIED
+2026-03-25 14:10:56,081 INFO 127.0.0.1 - - [25/Mar/2026 14:10:56] "[36mGET /assets/logo.svg HTTP/1.1[0m" 304 -
+2026-03-25 14:10:56,140 INFO 204 204 NO CONTENT
+2026-03-25 14:10:56,140 INFO 127.0.0.1 - - [25/Mar/2026 14:10:56] "[35m[1mGET /favicon.ico HTTP/1.1[0m" 204 -

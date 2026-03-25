@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-panel animate-fadein">
+	<div class="dashboard-header animate-slidein">
+		<h1>Annotation Tools</h1>
+		<div class="teacher-tools">
+			<button class="main-btn" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+		</div>
+	</div>
+	<div class="dashboard-content animate-fadein" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:32px;align-items:stretch;">
+		<section class="dashboard-section animate-card" id="annotation">
+			<h2>Notes &amp; File Upload</h2>
+			<div style="display:flex;gap:10px;flex-wrap:wrap;">
+				<button class="main-btn" onclick="addNote()">Add Note</button>
+				<button class="main-btn" onclick="highlightText()">Highlight</button>
+				<button class="main-btn" onclick="attachFile()">Attach File</button>
+			</div>
+			<div class="add-note" style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+				<input type="text" id="noteInput" placeholder="Type a note..." />
+				<button class="main-btn" onclick="saveNote()">Save</button>
+			</div>
+			<div class="note-list" id="noteList"></div>
+			<div style="margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+				<input type="file" id="fileInput" />
+				<button class="main-btn" onclick="uploadFile()">Upload</button>
+				<div id="fileList"></div>
+			</div>
+		</section>
+	</div>
+</div>
+<script>
+function addNote() { document.getElementById('noteInput').focus(); }
+function saveNote() {
+	const input = document.getElementById('noteInput');
+	const text = input.value.trim();
+	if (!text) return;
+	let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+	notes.push(text);
+	localStorage.setItem('teacher_notes', JSON.stringify(notes));
+	input.value = '';
+	renderNotes();
+}
+function deleteNote(i) {
+	let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+	notes.splice(i, 1);
+	localStorage.setItem('teacher_notes', JSON.stringify(notes));
+	renderNotes();
+}
+function renderNotes() {
+	const noteList = document.getElementById('noteList');
+	let notes = JSON.parse(localStorage.getItem('teacher_notes') || '[]');
+	noteList.innerHTML = notes.map((n,i) => `<div style='background:#181c28;color:#e6eaf3;border-radius:6px;padding:7px 10px;margin-bottom:6px;'>${n} <button class='main-btn' style='padding:2px 10px;font-size:0.98em;float:right;' onclick='deleteNote(${i})'>Delete</button></div>`).join('');
+}
+function uploadFile() {
+	const fileInput = document.getElementById('fileInput');
+	if (fileInput.files.length === 0) return;
+	let files = JSON.parse(localStorage.getItem('teacher_files') || '[]');
+	for (let file of fileInput.files) { files.push(file.name); }
+	localStorage.setItem('teacher_files', JSON.stringify(files));
+	renderFiles();
+}
+function renderFiles() {
+	const fileList = document.getElementById('fileList');
+	let files = JSON.parse(localStorage.getItem('teacher_files') || '[]');
+	fileList.innerHTML = files.length === 0 ? '<div style="color:#8fa3be">No files uploaded yet.</div>' : files.map(f => `<div>${f}</div>`).join('');
+}
+function highlightText() { alert('Highlight tool coming soon!'); }
+function attachFile() { alert('Attach file feature coming soon!'); }
+window.onload = function() { renderNotes(); renderFiles(); };
+</script>
+{% endblock %}

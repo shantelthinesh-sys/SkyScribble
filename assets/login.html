@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyScribble Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #02040a;
+      --bg-2: #081225;
+      --panel: rgba(6, 12, 24, 0.8);
+      --line: rgba(83, 136, 255, 0.24);
+      --text: #eaf2ff;
+      --muted: #8fa3be;
+      --accent-a: #3f8bff;
+      --accent-b: #2850d4;
+      --danger: #ff9a9a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Sora", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(70rem 30rem at -10% -20%, #0f3573 8%, transparent 54%),
+        radial-gradient(55rem 25rem at 115% 8%, #1a285a 4%, transparent 56%),
+        linear-gradient(155deg, var(--bg-1), var(--bg-2));
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .auth {
+      width: min(420px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 26px 72px rgba(0,0,0,0.5);
+      padding: 26px 22px 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .logo-wrap {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+    }
+
+    .logo-wrap img { width: 185px; }
+
+    .title {
+      margin: 8px 0 0;
+      text-align: center;
+      font-size: 1.7rem;
+    }
+
+    .subtitle {
+      margin: 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    form { display: grid; gap: 11px; }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: #c7d8ef;
+    }
+
+    input {
+      width: 100%;
+      border-radius: 11px;
+      border: 1px solid rgba(89, 127, 196, 0.28);
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--text);
+      padding: 12px 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(103, 146, 232, 0.72);
+      box-shadow: 0 0 0 3px rgba(84, 135, 235, 0.2);
+    }
+
+    .btn {
+      margin-top: 6px;
+      border: 1px solid rgba(123, 171, 255, 0.42);
+      border-radius: 11px;
+      padding: 12px;
+      font-weight: 700;
+      color: #eef4ff;
+      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+      cursor: pointer;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.84rem;
+      margin-top: 4px;
+    }
+
+    a { color: #8cb5ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .message {
+      min-height: 1.1rem;
+      color: var(--danger);
+      font-size: 0.88rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <section class="auth">
+    <div class="logo-wrap">
+      <img src="/assets/logo.svg" alt="SkyScribble logo" />
+    </div>
+
+    <h1 class="title">Welcome back</h1>
+    <p class="subtitle">Sign in to continue to your notes.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" required placeholder="name@skyscribble.app" />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required placeholder="Enter your password" />
+      </div>
+
+      <button class="btn" type="submit">Sign In</button>
+    </form>
+
+    <p id="message" class="message"></p>
+
+    <div class="row">
+      <span>Don't have an account? <a href="/signup">Sign Up</a></span>
+      <a href="/">Back to home</a>
+    </div>
+  </section>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem("skyscribble_users") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      message.textContent = "";
+
+      const formData = new FormData(form);
+      const email = String(formData.get("email") || "").trim().toLowerCase();
+      const password = String(formData.get("password") || "");
+
+      const user = getUsers().find((u) => u.email === email && u.password === password);
+      if (!user) {
+        message.textContent = "Invalid email or password.";
+        return;
+      }
+
+      localStorage.setItem("skyscribble_session", JSON.stringify({
+        name: user.name,
+        email: user.email,
+        loggedInAt: Date.now()
+      }));
+
+      window.location.href = "/dashboard";
+    });
+  </script>
+</body>
+</html>

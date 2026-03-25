@@ -1,0 +1,163 @@
+/*
+  SkyScribble Teacher Dashboard CSS
+  Extracted from dashboard.html for use in base.html
+*/
+/* Enhanced dark blue/black theme */
+html {
+  box-sizing: border-box;
+}
+:root {
+  --bg-1: #000000;
+  --bg-2: #0B1F3A;
+  --sidebar: #0B1F3A;
+  --panel: #112240;
+  --line: #112240;
+  --text: #FFFFFF;
+  --muted: #AABBCF;
+  --accent: #1E90FF;
+  --sidebar-width: 220px;
+}
+
+body, .main-panel, .sidebar, .dashboard-section {
+  box-shadow: none !important;
+}
+body {
+  background: var(--bg-1);
+  color: var(--text);
+  font-family: 'Inter', 'Poppins', 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+}
+
+/* Sidebar navigation */
+.sidebar nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 13px 32px;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  display: block;
+  margin-bottom: 4px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.sidebar nav a.active {
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.sidebar nav a:hover {
+  background: #112240;
+  color: var(--text);
+  box-shadow: 0 0 8px 0 var(--accent);
+}
+
+/* Buttons */
+.main-btn, button, input[type="button"], input[type="submit"] {
+  background: var(--bg-2);
+  color: var(--text);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+  margin: 0 4px 4px 0;
+  display: inline-block;
+}
+.main-btn:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  background: #112240;
+  color: #FFFFFF;
+  transform: scale(1.04);
+  box-shadow: 0 0 8px 0 var(--accent);
+}
+
+/* Card/Section */
+.dashboard-section {
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 2px 16px 0 #1E90FF11;
+  padding: 28px 24px 24px 24px;
+  min-width: 320px;
+  margin-bottom: 18px;
+  transition: box-shadow 0.2s, transform 0.2s, background 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+.dashboard-section:focus, .dashboard-section:hover {
+  box-shadow: 0 0 32px 0 var(--accent), 0 2px 16px 0 #1E90FF22;
+  background: #112240;
+}
+
+/* Headings */
+.dashboard-section h2, .dashboard-header h1 {
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 18px;
+  letter-spacing: 0.01em;
+}
+.dashboard-header h1 {
+  font-size: 2.1rem;
+  text-align: center;
+  margin: 0 auto 18px auto;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+/* Remove logout button styling (not used) */
+
+/* Note item */
+.dashboard-section .note-item {
+  background: #112240;
+  color: #AABBCF;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+
+/* List styling */
+.dashboard-section ul, .dashboard-section li {
+  color: #AABBCF;
+  font-size: 1rem;
+  margin: 0 0 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Links */
+a, .dashboard-section a {
+  color: #AABBCF;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+.dashboard-section a:hover {
+  color: #1E90FF;
+  border-bottom: 1px solid #1E90FF;
+}
+
+
+/* Animations */
+.animate-fadein {
+  animation: fadein 0.2s ease;
+}
+.animate-slidein {
+  animation: slidein 0.2s ease;
+}
+.animate-card {
+  animation: fadein 0.2s ease;
+}
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slidein {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyScribble Browser Draw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #02040a;
+      --bg-2: #081225;
+      --panel: rgba(6, 12, 24, 0.8);
+      --line: rgba(83, 136, 255, 0.24);
+      --ink: #eaf2ff;
+      --muted: #8fa3be;
+      --accent: #8cb5ff;
+      --accent-a: #3f8bff;
+      --accent-b: #2850d4;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Sora", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(70rem 30rem at -10% -20%, #0f3573 8%, transparent 54%),
+        radial-gradient(55rem 25rem at 115% 8%, #1a285a 4%, transparent 56%),
+        linear-gradient(155deg, var(--bg-1), var(--bg-2));
+    }
+
+    .shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand img {
+      width: 170px;
+      max-width: 40vw;
+    }
+
+    .user-chip {
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      background: rgba(8, 16, 30, 0.9);
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.1rem, 2.8vw, 1.7rem);
+      letter-spacing: 0.03em;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .studio-title {
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 11px;
+      padding: 9px 12px;
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    button, a {
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--ink);
+      border-radius: 11px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    #startBtn {
+      border: 1px solid rgba(123, 171, 255, 0.42);
+      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+      font-weight: 700;
+    }
+
+    .workspace {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #030a15;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      max-height: 75vh;
+    }
+
+    video, canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    video {
+      transform: scaleX(-1);
+      filter: saturate(1.04) contrast(1.04);
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 8px;
+    }
+
+    .toolbox {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .swatches {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .tool {
+      display: grid;
+      gap: 6px;
+    }
+
+    .tool label {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .tool input,
+    .tool select {
+      width: 100%;
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 10px;
+      padding: 7px 8px;
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--ink);
+    }
+
+    .tool input[type="color"] {
+      min-height: 40px;
+      padding: 4px;
+    }
+
+    .concept-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      padding: 10px;
+    }
+
+    .concept-row label {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .concept-row input {
+      width: 100%;
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--ink);
+    }
+
+    .concept-row textarea {
+      width: 100%;
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--ink);
+      resize: vertical;
+      min-height: 74px;
+      font-family: "Sora", "Segoe UI", sans-serif;
+    }
+
+    .chip {
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 8px 10px;
+      font-size: 0.92rem;
+    }
+
+    .mode {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .error {
+      color: #ffb2b2;
+      font-weight: 600;
+      min-height: 1.2em;
+    }
+
+    .result-panel {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #cfe0ff;
+    }
+
+    .result-meta {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .result-view {
+      min-height: 180px;
+      border: 1px dashed rgba(89, 127, 196, 0.45);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(3, 10, 21, 0.72);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .result-view img,
+    .result-view video {
+      max-width: 100%;
+      max-height: 360px;
+      border-radius: 10px;
+      border: 1px solid rgba(89, 127, 196, 0.3);
+      background: #030a15;
+    }
+
+    .result-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ai-panel {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .ai-chat-log {
+      min-height: 120px;
+      max-height: 240px;
+      overflow: auto;
+      border: 1px dashed rgba(89, 127, 196, 0.45);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      background: rgba(3, 10, 21, 0.72);
+    }
+
+    .ai-msg {
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      border: 1px solid rgba(89, 127, 196, 0.2);
+    }
+
+    .ai-msg.user {
+      background: rgba(63, 139, 255, 0.14);
+      justify-self: end;
+      max-width: 85%;
+    }
+
+    .ai-msg.bot {
+      background: rgba(111, 168, 255, 0.08);
+      justify-self: start;
+      max-width: 92%;
+      color: var(--ink);
+    }
+
+    .ai-input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ai-input-row input {
+      width: 100%;
+      border: 1px solid rgba(89, 127, 196, 0.34);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: rgba(8, 16, 30, 0.9);
+      color: var(--ink);
+    }
+
+    @media (max-width: 700px) {
+      .workspace { aspect-ratio: 3 / 4; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="topbar">
+      <div class="brand">
+        <img src="/assets/logo.svg" alt="SkyScribble logo" />
+        <span id="userChip" class="user-chip">Guest Mode</span>
+        <span id="studioTitle" class="studio-title">Studio: Drawing Studio</span>
+      </div>
+      <div class="controls">
+        <button id="startBtn" type="button">Start Camera</button>
+        <button id="clearBtn" type="button">Clear Canvas</button>
+        <button id="downloadBtn" type="button">Submit</button>
+        <button id="logoutBtn" type="button">Logout</button>
+        <a href="/">Back To Home</a>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="drawCanvas"></canvas>
+      <canvas id="overlayCanvas"></canvas>
+    </section>
+
+    <section class="hud">
+      <div class="chip">Mode: <span id="modeText" class="mode">WAIT</span></div>
+      <div class="chip">FPS: <span id="fpsText">0</span></div>
+      <div class="chip">Pen: <span id="penPreview">Neon</span></div>
+      <div class="chip">Gesture: index finger = write, two fingers = erase, three fingers = hold, open palm = clear, closed fist (hold) = save</div>
+    </section>
+
+    <section class="toolbox">
+      <div class="tool">
+        <label for="colorPicker">Pen Color</label>
+        <input id="colorPicker" type="color" value="#ffe066" />
+        <div class="swatches">
+          <button class="swatch" type="button" data-color="#ffe066" style="background:#ffe066"></button>
+          <button class="swatch" type="button" data-color="#ff6b6b" style="background:#ff6b6b"></button>
+          <button class="swatch" type="button" data-color="#6cf0d1" style="background:#6cf0d1"></button>
+          <button class="swatch" type="button" data-color="#6aa9ff" style="background:#6aa9ff"></button>
+          <button class="swatch" type="button" data-color="#f49bff" style="background:#f49bff"></button>
+          <button class="swatch" type="button" data-color="#ffffff" style="background:#ffffff"></button>
+        </div>
+      </div>
+      <div class="tool">
+        <label for="penType">Pen Type</label>
+        <select id="penType">
+          <option value="neon">Neon</option>
+          <option value="marker">Marker</option>
+          <option value="ink">Ink</option>
+          <option value="spray">Spray</option>
+        </select>
+      </div>
+      <div class="tool">
+        <label for="sizeSlider">Pen Size</label>
+        <input id="sizeSlider" type="range" min="2" max="28" value="8" />
+      </div>
+      <div class="tool">
+        <label for="textureSlider">Texture Intensity</label>
+        <input id="textureSlider" type="range" min="0" max="100" value="30" />
+      </div>
+    </section>
+
+    <section class="concept-row">
+      <label for="conceptInput">What are you drawing? (required for AI guidance)</label>
+      <input id="conceptInput" type="text" maxlength="80" placeholder="Example: fish, dragon, flying car, game character" />
+      <label for="animationInput">Animation instructions for AI (required)</label>
+      <textarea id="animationInput" maxlength="240" placeholder="Example: smooth swimming loop, camera slowly pans left, glowing water particles"></textarea>
+    </section>
+
+    <section class="result-panel">
+      <div class="result-head">
+        <h2 class="result-title">Studio Output Preview</h2>
+        <p id="resultMeta" class="result-meta">Submit in this studio to generate preview.</p>
+      </div>
+      <div id="resultView" class="result-view">No generated output yet.</div>
+      <div id="resultLinks" class="result-links"></div>
+    </section>
+
+    <section class="ai-panel">
+      <div class="result-head">
+        <h2 class="result-title">AI Studio Assistant</h2>
+        <p class="result-meta">Ask AI to convert this drawing into 3D, animation, or other output.</p>
+      </div>
+      <div id="aiChatLog" class="ai-chat-log">
+        <div class="ai-msg bot">Tell me what to generate from your current drawing. Example: "convert this fish drawing into a 3d animated loop".</div>
+      </div>
+      <div class="ai-input-row">
+        <input id="aiChatInput" type="text" maxlength="260" placeholder="Example: Convert this to 3D model and also create a smooth looping animation" />
+        <button id="aiSendBtn" type="button">Send To AI</button>
+      </div>
+    </section>
+
+    <p class="hint">Click Start Camera, allow permission, then show your hand in good light. Writing auto-pauses if your index finger stays still for 2 seconds. Saving in each studio generates that studio's output automatically.</p>
+    <p id="errorText" class="error"></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+  <script>
+    const video = document.getElementById("video");
+    const drawCanvas = document.getElementById("drawCanvas");
+    const overlayCanvas = document.getElementById("overlayCanvas");
+    const startBtn = document.getElementById("startBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userChip = document.getElementById("userChip");
+    const studioTitle = document.getElementById("studioTitle");
+    const modeText = document.getElementById("modeText");
+    const fpsText = document.getElementById("fpsText");
+    const penPreview = document.getElementById("penPreview");
+    const errorText = document.getElementById("errorText");
+    const colorPicker = document.getElementById("colorPicker");
+    const penType = document.getElementById("penType");
+    const sizeSlider = document.getElementById("sizeSlider");
+    const textureSlider = document.getElementById("textureSlider");
+    const conceptInput = document.getElementById("conceptInput");
+    const animationInput = document.getElementById("animationInput");
+    const resultMeta = document.getElementById("resultMeta");
+    const resultView = document.getElementById("resultView");
+    const resultLinks = document.getElementById("resultLinks");
+    const aiChatLog = document.getElementById("aiChatLog");
+    const aiChatInput = document.getElementById("aiChatInput");
+    const aiSendBtn = document.getElementById("aiSendBtn");
+    const swatches = document.querySelectorAll(".swatch");
+
+    const STUDIO_LABELS = {
+      "image-generator": "Image Generator",
+      "video-animation": "Video Animation",
+      "3d-model": "3D Model",
+      "2d-model": "2D Model",
+      "3d-animation": "3D Animation",
+    };
+
+    const STUDIO_ALIASES = {
+      "drawing-studio": "image-generator",
+      "2d-animation": "video-animation",
+    };
+
+    const requestedStudio = new URLSearchParams(window.location.search).get("studio") || "image-generator";
+    const studioSlug = STUDIO_LABELS[requestedStudio]
+      ? requestedStudio
+      : (STUDIO_ALIASES[requestedStudio] || "image-generator");
+    const studioLabel = STUDIO_LABELS[studioSlug] || STUDIO_LABELS["image-generator"];
+
+    const drawCtx = drawCanvas.getContext("2d");
+    const overlayCtx = overlayCanvas.getContext("2d");
+
+    const HAND_EDGES = [
+      [0,1],[1,2],[2,3],[3,4],
+      [0,5],[5,6],[6,7],[7,8],
+      [5,9],[9,10],[10,11],[11,12],
+      [9,13],[13,14],[14,15],[15,16],
+      [13,17],[17,18],[18,19],[19,20],
+      [0,17]
+    ];
+
+    let stream = null;
+    let hands = null;
+    let running = false;
+    let prevPoint = null;
+    let lastHandSeenAt = 0;
+    let lastDrawGestureAt = 0;
+    let lastPaintMode = "DRAW";
+    let lastClearAt = 0;
+    let lastSaveAt = 0;
+    let fistStartAt = 0;
+    let clearStartAt = 0;
+    let lastFingerPoint = null;
+    let lastFingerMoveAt = 0;
+    let handMissingSince = 0;
+    let autoSubmittedOnLeave = false;
+    let hasDrawnSinceLastSave = false;
+    let lastTick = performance.now();
+    const HOLD_MS = 3000;
+    const SAVE_COOLDOWN_MS = 2200;
+    const FIST_HOLD_MS = 320;
+    const CLEAR_HOLD_MS = 380;
+    const HAND_LEAVE_AUTOSUBMIT_MS = 800;
+    const FINGER_IDLE_MS = 2000;
+    const FINGER_MOVE_PX = 2.5;
+
+    function requireAuthContext() {
+      try {
+        const raw = localStorage.getItem("skyscribble_session");
+        if (!raw) {
+          userChip.textContent = "Guest Mode";
+          return;
+        }
+        const session = JSON.parse(raw);
+        userChip.textContent = "Artist: " + (session.name || session.email || "User");
+      } catch {
+        userChip.textContent = "Guest Mode";
+      }
+    }
+
+    function setStatus(mode, message) {
+      modeText.textContent = mode;
+      errorText.textContent = message || "";
+    }
+
+    function activeUserName() {
+      try {
+        const raw = localStorage.getItem("skyscribble_session");
+        if (!raw) return "guest";
+        const session = JSON.parse(raw);
+        return session.name || session.email || "guest";
+      } catch {
+        return "guest";
+      }
+    }
+
+    function clearResultPreview() {
+      resultView.innerHTML = "No generated output yet.";
+      resultLinks.innerHTML = "";
+    }
+
+    function appendResultLink(text, href, downloadName = "") {
+      const link = document.createElement("a");
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = text;
+      if (downloadName) {
+        link.download = downloadName;
+      }
+      resultLinks.appendChild(link);
+    }
+
+    function renderResult(saved) {
+      clearResultPreview();
+      resultMeta.textContent = `${saved.module_label} • Session ${saved.session_id}`;
+
+      const primary = (saved.generated || [])[0];
+      if (!primary) {
+        resultView.textContent = "Output generated, but no preview file was returned.";
+      } else if (saved.preview_kind === "image") {
+        const img = document.createElement("img");
+        img.src = saved.primary_url + "?t=" + Date.now();
+        img.alt = "Generated output";
+        resultView.innerHTML = "";
+        resultView.appendChild(img);
+      } else if (saved.preview_kind === "animation") {
+        const img = document.createElement("img");
+        img.src = saved.primary_url + "?t=" + Date.now();
+        img.alt = "Generated animation";
+        resultView.innerHTML = "";
+        resultView.appendChild(img);
+      } else if (saved.preview_kind === "video") {
+        const vid = document.createElement("video");
+        vid.src = saved.primary_url + "?t=" + Date.now();
+        vid.controls = true;
+        vid.autoplay = true;
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        resultView.innerHTML = "";
+        resultView.appendChild(vid);
+      } else if (saved.preview_kind === "svg") {
+        const obj = document.createElement("object");
+        obj.data = saved.primary_url + "?t=" + Date.now();
+        obj.type = "image/svg+xml";
+        obj.style.width = "100%";
+        obj.style.height = "320px";
+        resultView.innerHTML = "";
+        resultView.appendChild(obj);
+      } else if (saved.preview_kind === "3d") {
+        resultView.innerHTML = "";
+        const text = document.createElement("div");
+        text.textContent = "3D model generated (.obj). Open generated file links below for mesh assets.";
+        resultView.appendChild(text);
+      } else {
+        resultView.textContent = "Output generated. Use links below to open files.";
+      }
+
+      appendResultLink("Open primary output", saved.primary_url);
+      appendResultLink("Download primary output", saved.primary_url, "skyscribble-output");
+      (saved.generated || []).forEach((item, idx) => {
+        appendResultLink(`Open generated ${idx + 1} (${item.type})`, item.url);
+        appendResultLink(`Download generated ${idx + 1} (${item.type})`, item.url, `skyscribble-generated-${idx + 1}`);
+      });
+      appendResultLink("Open metadata", saved.meta);
+    }
+
+    function appendAiMessage(role, text) {
+      const item = document.createElement("div");
+      item.className = `ai-msg ${role}`;
+      item.textContent = text;
+      aiChatLog.appendChild(item);
+      aiChatLog.scrollTop = aiChatLog.scrollHeight;
+    }
+
+    async function parseApiResponse(res) {
+      const contentType = (res.headers.get("content-type") || "").toLowerCase();
+      if (contentType.includes("application/json")) {
+        return await res.json();
+      }
+
+      const text = await res.text();
+      const compact = text.replace(/\s+/g, " ").trim().slice(0, 180);
+      throw new Error(`Server returned non-JSON response (${res.status}). ${compact}`);
+    }
+
+    function resizeCanvases() {
+      const rect = video.getBoundingClientRect();
+      const width = Math.max(1, Math.round(rect.width));
+      const height = Math.max(1, Math.round(rect.height));
+      if (drawCanvas.width === width && drawCanvas.height === height) return;
+
+      const snapshot = document.createElement("canvas");
+      snapshot.width = drawCanvas.width;
+      snapshot.height = drawCanvas.height;
+      snapshot.getContext("2d").drawImage(drawCanvas, 0, 0);
+
+      drawCanvas.width = width;
+      drawCanvas.height = height;
+      overlayCanvas.width = width;
+      overlayCanvas.height = height;
+      drawCtx.drawImage(snapshot, 0, 0, width, height);
+    }
+
+    function clearCanvas() {
+      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    }
+
+    function currentBrush() {
+      return {
+        color: colorPicker.value,
+        type: penType.value,
+        size: Number(sizeSlider.value),
+        texture: Number(textureSlider.value) / 100,
+      };
+    }
+
+    function strokeSegment(from, to, brush, mode) {
+      if (mode === "ERASE") {
+        drawCtx.save();
+        drawCtx.globalCompositeOperation = "destination-out";
+        drawCtx.strokeStyle = "rgba(0,0,0,1)";
+        drawCtx.lineWidth = Math.max(14, brush.size * 2.6);
+        drawCtx.lineCap = "round";
+        drawCtx.lineJoin = "round";
+        drawCtx.beginPath();
+        drawCtx.moveTo(from.x, from.y);
+        drawCtx.lineTo(to.x, to.y);
+        drawCtx.stroke();
+        drawCtx.restore();
+        return;
+      }
+
+      drawCtx.save();
+      drawCtx.globalCompositeOperation = "source-over";
+      drawCtx.lineCap = "round";
+      drawCtx.lineJoin = "round";
+
+      if (brush.type === "marker") {
+        drawCtx.globalAlpha = 0.6 + (brush.texture * 0.25);
+        drawCtx.strokeStyle = brush.color;
+        drawCtx.lineWidth = brush.size * 1.2;
+        drawCtx.beginPath();
+        drawCtx.moveTo(from.x, from.y);
+        drawCtx.lineTo(to.x, to.y);
+        drawCtx.stroke();
+      } else if (brush.type === "ink") {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const speed = Math.hypot(dx, dy);
+        drawCtx.strokeStyle = brush.color;
+        drawCtx.lineWidth = Math.max(1.5, brush.size * (1.15 - Math.min(0.6, speed / 50)));
+        drawCtx.beginPath();
+        drawCtx.moveTo(from.x, from.y);
+        drawCtx.lineTo(to.x, to.y);
+        drawCtx.stroke();
+      } else if (brush.type === "spray") {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 2));
+        const density = Math.round(10 + (brush.texture * 22));
+        drawCtx.fillStyle = brush.color;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const px = from.x + dx * t;
+          const py = from.y + dy * t;
+          for (let j = 0; j < density; j++) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * (brush.size * (0.3 + brush.texture));
+            drawCtx.fillRect(
+              px + Math.cos(angle) * radius,
+              py + Math.sin(angle) * radius,
+              1.4,
+              1.4
+            );
+          }
+        }
+      } else {
+        drawCtx.strokeStyle = brush.color;
+        drawCtx.lineWidth = brush.size;
+        drawCtx.shadowColor = brush.color;
+        drawCtx.shadowBlur = 6 + (brush.texture * 16);
+        drawCtx.beginPath();
+        drawCtx.moveTo(from.x, from.y);
+        drawCtx.lineTo(to.x, to.y);
+        drawCtx.stroke();
+      }
+
+      drawCtx.restore();
+    }
+
+    function mirroredPoint(px, py) {
+      return {
+        x: drawCanvas.width - px,
+        y: py,
+      };
+    }
+
+    function toCanvasPoint(point) {
+      // MediaPipe hands returns normalized coordinates [0..1].
+      return {
+        x: point.x * drawCanvas.width,
+        y: point.y * drawCanvas.height,
+      };
+    }
+
+    function fingerState(points) {
+      const palm = Math.hypot(points[0].x - points[9].x, points[0].y - points[9].y);
+      const margin = Math.max(5, palm * 0.065);
+      const wrist = points[0];
+      const tipIndexes = [8, 12, 16, 20];
+      const mcpIndexes = [5, 9, 13, 17];
+
+      const avgTipDist = tipIndexes.reduce((sum, i) => {
+        return sum + Math.hypot(points[i].x - wrist.x, points[i].y - wrist.y);
+      }, 0) / tipIndexes.length;
+
+      const avgMcpDist = mcpIndexes.reduce((sum, i) => {
+        return sum + Math.hypot(points[i].x - wrist.x, points[i].y - wrist.y);
+      }, 0) / mcpIndexes.length;
+
+      const state = {
+        thumb: points[4].x > points[3].x + margin * 0.2,
+        index: points[8].y < points[6].y - margin,
+        middle: points[12].y < points[10].y - margin,
+        ring: points[16].y < points[14].y - margin,
+        pinky: points[20].y < points[18].y - margin,
+        avgTipDist,
+        avgMcpDist,
+      };
+
+      state.extendedCount = [state.index, state.middle, state.ring, state.pinky].filter(Boolean).length;
+      return state;
+    }
+
+    function resolveMode(state) {
+      const hold = state.extendedCount === 3;
+      const openPalm = state.extendedCount === 4 && state.avgTipDist > (state.avgMcpDist * 1.28);
+      const fist = state.extendedCount === 0 && state.avgTipDist < (state.avgMcpDist * 1.02);
+      if (openPalm) return "CLEAR";
+      if (fist) return "SAVE";
+      if (hold) return "HOLD";
+      if (state.index && state.middle) return "ERASE";
+      if (state.index) return "DRAW";
+      return "MOVE";
+    }
+
+    function drawSkeleton(points) {
+      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+      overlayCtx.lineWidth = 2;
+      overlayCtx.strokeStyle = "rgba(121,224,208,0.7)";
+      overlayCtx.fillStyle = "rgba(255,210,127,0.9)";
+
+      for (const [a, b] of HAND_EDGES) {
+        const pa = mirroredPoint(points[a].x, points[a].y);
+        const pb = mirroredPoint(points[b].x, points[b].y);
+        overlayCtx.beginPath();
+        overlayCtx.moveTo(pa.x, pa.y);
+        overlayCtx.lineTo(pb.x, pb.y);
+        overlayCtx.stroke();
+      }
+
+      for (const p of points) {
+        const pt = mirroredPoint(p.x, p.y);
+        overlayCtx.beginPath();
+        overlayCtx.arc(pt.x, pt.y, 3, 0, Math.PI * 2);
+        overlayCtx.fill();
+      }
+    }
+
+    function updateFps() {
+      const now = performance.now();
+      const dt = Math.max(1, now - lastTick);
+      lastTick = now;
+      fpsText.textContent = String(Math.round(1000 / dt));
+    }
+
+    function handleLandmarks(points) {
+      if (!points || points.length < 21) {
+        if (!handMissingSince) {
+          handMissingSince = performance.now();
+        }
+
+        const missingFor = performance.now() - handMissingSince;
+        if (hasDrawnSinceLastSave && !autoSubmittedOnLeave && missingFor >= HAND_LEAVE_AUTOSUBMIT_MS) {
+          autoSubmittedOnLeave = true;
+          savePng();
+          setStatus("SUBMIT", "Hand removed. Auto-submitting drawing to generate output...");
+        }
+
+        if (performance.now() - lastHandSeenAt > HOLD_MS) {
+          setStatus("IDLE", "");
+          prevPoint = null;
+        } else {
+          setStatus("HOLD", "Maintaining stroke anchor for 3 seconds.");
+        }
+        overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+        return;
+      }
+
+      lastHandSeenAt = performance.now();
+  handMissingSince = 0;
+  autoSubmittedOnLeave = false;
+
+      const pixelPoints = points.map(toCanvasPoint);
+
+      drawSkeleton(pixelPoints);
+      updateFps();
+
+      const now = performance.now();
+      const detectedMode = resolveMode(fingerState(pixelPoints));
+
+      let mode = detectedMode;
+      if (detectedMode === "SAVE") {
+        if (!fistStartAt) fistStartAt = now;
+        if (now - fistStartAt < FIST_HOLD_MS) {
+          setStatus("HOLD", "Hold closed fist to save...");
+          prevPoint = null;
+          return;
+        }
+      } else {
+        fistStartAt = 0;
+      }
+
+      setStatus(mode, "");
+
+      const tipRaw = pixelPoints[8];
+      const tip = mirroredPoint(tipRaw.x, tipRaw.y);
+      const smooth = prevPoint
+        ? { x: prevPoint.x * 0.4 + tip.x * 0.6, y: prevPoint.y * 0.4 + tip.y * 0.6 }
+        : tip;
+
+      if (!lastFingerPoint) {
+        lastFingerPoint = tip;
+        lastFingerMoveAt = now;
+      } else {
+        const fingerDelta = Math.hypot(tip.x - lastFingerPoint.x, tip.y - lastFingerPoint.y);
+        if (fingerDelta > FINGER_MOVE_PX) {
+          lastFingerMoveAt = now;
+          lastFingerPoint = tip;
+        }
+      }
+
+      if (mode === "CLEAR") {
+        if (!clearStartAt) {
+          clearStartAt = now;
+          setStatus("HOLD", "Hold open palm to clear...");
+          prevPoint = null;
+          return;
+        }
+
+        if (now - clearStartAt < CLEAR_HOLD_MS) {
+          setStatus("HOLD", "Hold open palm to clear...");
+          prevPoint = null;
+          return;
+        }
+
+        if (now - lastClearAt > 800) {
+          clearCanvas();
+          lastClearAt = now;
+          hasDrawnSinceLastSave = false;
+        }
+        prevPoint = null;
+        return;
+      } else {
+        clearStartAt = 0;
+      }
+
+      if (mode === "SAVE") {
+        if (now - lastSaveAt > SAVE_COOLDOWN_MS) {
+          savePng();
+          lastSaveAt = now;
+          setStatus("SAVED", "Closed fist detected. Drawing saved.");
+        }
+        prevPoint = null;
+        return;
+      }
+
+      if (mode === "HOLD") {
+        setStatus("HOLD", "Three fingers detected. Pen paused.");
+        prevPoint = null;
+        return;
+      }
+
+      if (mode === "MOVE") {
+        prevPoint = null;
+        lastFingerPoint = null;
+        return;
+      }
+
+      if (mode === "DRAW" || mode === "ERASE") {
+        lastDrawGestureAt = now;
+        lastPaintMode = mode;
+      }
+
+      if (mode === "DRAW" && (now - lastFingerMoveAt) >= FINGER_IDLE_MS) {
+        setStatus("PAUSE", "Finger idle for 2 seconds. Move index finger to resume writing.");
+        prevPoint = smooth;
+        return;
+      }
+
+      if (!prevPoint) prevPoint = smooth;
+
+      const brush = currentBrush();
+      strokeSegment(prevPoint, smooth, brush, mode);
+      if (mode === "DRAW") {
+        hasDrawnSinceLastSave = true;
+      }
+
+      prevPoint = smooth;
+    }
+
+    async function initHands() {
+      if (!window.Hands) {
+        throw new Error("MediaPipe Hands library did not load. Check internet connection.");
+      }
+
+      hands = new Hands({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+      });
+
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 0,
+        minDetectionConfidence: 0.45,
+        minTrackingConfidence: 0.45,
+      });
+
+      hands.onResults((results) => {
+        if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+          const now = performance.now();
+          if (now - lastHandSeenAt > HOLD_MS) {
+            setStatus("IDLE", "");
+            prevPoint = null;
+          } else {
+            setStatus("HOLD", "Hand temporarily lost, holding stroke.");
+          }
+          overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+          return;
+        }
+
+        handleLandmarks(results.multiHandLandmarks[0]);
+      });
+    }
+
+    async function frameLoop() {
+      if (!running) return;
+      if (video.readyState >= 2) {
+        resizeCanvases();
+        await hands.send({ image: video });
+      }
+      requestAnimationFrame(frameLoop);
+    }
+
+    async function startCamera() {
+      if (running) return;
+      setStatus("BOOTING", "Requesting camera permission...");
+      startBtn.disabled = true;
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        });
+
+        video.srcObject = stream;
+        await new Promise((resolve) => {
+          video.onloadedmetadata = () => resolve();
+        });
+        await video.play();
+
+        await initHands();
+        resizeCanvases();
+        window.addEventListener("resize", resizeCanvases);
+
+        running = true;
+        setStatus("READY", "Tracker active");
+        startBtn.textContent = "Camera Running";
+        requestAnimationFrame(frameLoop);
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        setStatus("ERROR", "Camera start failed: " + msg + " | Allow camera for 127.0.0.1 and retry.");
+        startBtn.disabled = false;
+        startBtn.textContent = "Retry Camera";
+      }
+    }
+
+    function exportCanvasData() {
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = drawCanvas.width;
+      exportCanvas.height = drawCanvas.height;
+      const exportCtx = exportCanvas.getContext("2d");
+      exportCtx.fillStyle = "#04131f";
+      exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      exportCtx.drawImage(drawCanvas, 0, 0);
+
+      return exportCanvas.toDataURL("image/png");
+    }
+
+    async function savePng() {
+      const imageData = exportCanvasData();
+      const prompt = conceptInput.value.trim();
+      const animationPrompt = animationInput.value.trim();
+      const title = prompt || "untitled";
+      const payload = {
+        studio: studioSlug,
+        title,
+        prompt,
+        animation_prompt: animationPrompt || prompt,
+        image_data: imageData,
+        user_name: activeUserName(),
+      };
+
+      try {
+        downloadBtn.disabled = true;
+        setStatus("BUILD", `Generating ${studioLabel} output...`);
+
+        const res = await fetch("/api/save-drawing", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await parseApiResponse(res);
+        if (!res.ok) {
+          throw new Error(data.error || "Save failed");
+        }
+
+        const generated = (data.saved.generated || []).map((g) => g.type).join(", ");
+        setStatus("SAVED", `${data.saved.module_label} saved. Generated: ${generated || "asset"}.`);
+        renderResult(data.saved);
+        hasDrawnSinceLastSave = false;
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        setStatus("ERROR", "Submit failed. Preview was not generated. " + msg);
+      } finally {
+        downloadBtn.disabled = false;
+      }
+    }
+
+    async function sendToAi() {
+      const message = aiChatInput.value.trim() || animationInput.value.trim() || "generate output from this drawing";
+      const prompt = conceptInput.value.trim() || "drawing";
+      const imageData = exportCanvasData();
+
+      appendAiMessage("user", message);
+      aiChatInput.value = "";
+
+      try {
+        aiSendBtn.disabled = true;
+        setStatus("AI", "AI is analyzing your drawing and creating output...");
+
+        const res = await fetch("/api/ai-chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studio: studioSlug,
+            message,
+            prompt,
+            image_data: imageData,
+            user_name: activeUserName(),
+          }),
+        });
+
+        const data = await parseApiResponse(res);
+        if (!res.ok) {
+          throw new Error(data.error || "AI generation failed");
+        }
+
+        appendAiMessage("bot", data.reply || "AI generation completed.");
+        if (data.saved) {
+          renderResult(data.saved);
+          setStatus("SAVED", "AI generated output and updated preview.");
+          hasDrawnSinceLastSave = false;
+        }
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        appendAiMessage("bot", "I could not generate output right now: " + msg);
+        setStatus("ERROR", "AI generation failed. " + msg);
+      } finally {
+        aiSendBtn.disabled = false;
+      }
+    }
+
+    startBtn.addEventListener("click", startCamera);
+    clearBtn.addEventListener("click", clearCanvas);
+    downloadBtn.addEventListener("click", savePng);
+    aiSendBtn.addEventListener("click", sendToAi);
+    aiChatInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        sendToAi();
+      }
+    });
+    penType.addEventListener("change", () => {
+      penPreview.textContent = penType.options[penType.selectedIndex].text;
+    });
+
+    swatches.forEach((swatch) => {
+      swatch.addEventListener("click", () => {
+        colorPicker.value = swatch.dataset.color;
+      });
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("skyscribble_session");
+      window.location.href = "/login";
+    });
+
+    requireAuthContext();
+    studioTitle.textContent = "Studio: " + studioLabel;
+    clearResultPreview();
+    penPreview.textContent = penType.options[penType.selectedIndex].text;
+
+    setStatus("WAIT", "Click Start Camera to begin.");
+  </script>
+</body>
+</html>

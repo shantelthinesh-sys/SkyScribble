@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Classes - SkyScribble Teacher</title>
+  <link href="dashboard.html" rel="stylesheet" />
+</head>
+<body>
+  <div class="sidebar"> ... </div>
+  <div class="main-panel">
+    <div class="dashboard-header"><h1>Classes</h1></div>
+    <div class="dashboard-content">
+      <section class="dashboard-section" id="classes">
+        <h2>Manage Classes</h2>
+        <ul id="classList"></ul>
+        <div class="add-note" style="margin-top:12px;">
+          <input type="text" id="classInput" placeholder="Add new class (e.g. Grade 7A)" />
+          <button onclick="addClass()">Add</button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="/assets/js/classes.js"></script>
+</body>
+</html>

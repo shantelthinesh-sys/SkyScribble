@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyScribble Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #02040a;
+      --bg-2: #081225;
+      --panel: rgba(6, 12, 24, 0.78);
+      --panel-soft: rgba(8, 17, 31, 0.82);
+      --line: rgba(83, 136, 255, 0.24);
+      --text: #eaf2ff;
+      --muted: #8fa3be;
+      --accent-a: #3f8bff;
+      --accent-b: #2850d4;
+      --ok: #67e0b2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Sora", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(70rem 30rem at -10% -20%, #0f3573 8%, transparent 54%),
+        radial-gradient(55rem 25rem at 115% 8%, #1a285a 4%, transparent 56%),
+        linear-gradient(155deg, var(--bg-1), var(--bg-2));
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .shell {
+      width: min(1120px, 100%);
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 26px 72px rgba(0,0,0,0.5);
+    }
+
+    .menu {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      align-content: space-between;
+      min-height: 760px;
+    }
+
+    .logo-wrap {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      padding-top: 18px;
+    }
+
+    .logo-wrap img { width: 220px; }
+
+    .tagline {
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .primary {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 700;
+      color: #eef4ff;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+      border: 1px solid rgba(123, 171, 255, 0.42);
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(92, 134, 216, 0.18);
+      background: var(--panel-soft);
+      color: #d7e6ff;
+      text-decoration: none;
+      font-size: 0.92rem;
+    }
+
+    .item span:last-child { color: var(--muted); }
+
+    .bottom-nav {
+      border-radius: 999px;
+      border: 1px solid rgba(92, 134, 216, 0.18);
+      padding: 7px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: rgba(5, 13, 25, 0.84);
+    }
+
+    .nav-pill {
+      border-radius: 999px;
+      text-align: center;
+      padding: 10px 6px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .nav-pill.active {
+      background: rgba(58, 111, 236, 0.38);
+      color: #eaf2ff;
+    }
+
+    .content {
+      padding: 30px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .heading {
+      margin: 0;
+      font-size: clamp(1.6rem, 3.6vw, 2.35rem);
+      line-height: 1.18;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 65ch;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      color: #eaf2ff;
+      border: 1px solid rgba(105, 147, 228, 0.34);
+      background: rgba(10, 21, 39, 0.86);
+      border-radius: 10px;
+      padding: 11px 15px;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+      border-color: rgba(123, 171, 255, 0.42);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .feature {
+      border: 1px solid rgba(92, 134, 216, 0.18);
+      background: var(--panel-soft);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .feature h3 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+      color: #99bcff;
+    }
+
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #73849e;
+    }
+
+    .dot.ok { background: var(--ok); }
+
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .menu { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card menu">
+      <div>
+        <div class="logo-wrap">
+          <img src="/assets/logo.svg" alt="SkyScribble logo" />
+          <p class="tagline">Capture thoughts.<br>Elevate ideas.</p>
+        </div>
+      </div>
+
+      <div class="mini-list">
+        <a class="primary" href="/dashboard">Open Dashboard</a>
+        <a class="item" href="/draw"><span>Studio</span><span>Live</span></a>
+        <a class="item" href="/login"><span>Login</span><span>Secure</span></a>
+        <a class="item" href="/signup"><span>Create account</span><span>New</span></a>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-pill active">Home</div>
+        <div class="nav-pill">Studio</div>
+        <div class="nav-pill">Account</div>
+      </div>
+    </section>
+
+    <section class="card content">
+      <h1 class="heading">Professional Air Drawing Studio, Reimagined</h1>
+      <p class="sub">Gesture-powered drawing with a modern interface. Enter through secure login/signup, manage your profile on dashboard, and create in the studio with responsive brush controls.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="/signup">Get Started</a>
+        <a class="btn" href="/login">Sign In</a>
+        <a class="btn" href="/draw">Try Studio</a>
+      </div>
+
+      <div class="grid">
+        <article class="feature">
+          <h3>Gesture Pipeline</h3>
+          <p>Index to write, two fingers to erase, open palm to clear, closed fist hold to save.</p>
+        </article>
+        <article class="feature">
+          <h3>Brush Engine</h3>
+          <p>Neon, marker, ink, and spray with live color, size, and texture controls.</p>
+        </article>
+        <article class="feature">
+          <h3>Session Flow</h3>
+          <p>Streamlined auth and dashboard pages for a complete product experience.</p>
+        </article>
+      </div>
+
+      <div class="status">
+        <span id="dot" class="dot"></span>
+        <span id="statusText">Checking backend health...</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function checkHealth() {
+      const dot = document.getElementById("dot");
+      const text = document.getElementById("statusText");
+      try {
+        const response = await fetch("/api/health", { cache: "no-store" });
+        if (!response.ok) throw new Error("health not ok");
+        dot.classList.add("ok");
+        text.textContent = "Backend ready.";
+      } catch {
+        dot.classList.remove("ok");
+        text.textContent = "Backend unavailable. Start web mode and refresh.";
+      }
+    }
+
+    checkHealth();
+    setInterval(checkHealth, 8000);
+  </script>
+</body>
+</html>

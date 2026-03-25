@@ -1,0 +1,10 @@
+200  /
+200  /login
+200  /signup
+200  /dashboard
+200  /classes
+200  /assignments
+200  /annotation
+200  /resources
+200  /draw
+200  /api/health

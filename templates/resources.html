@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="main-panel animate-fadein">
+	<div class="dashboard-header animate-slidein">
+		<h1>Resources</h1>
+		<div class="teacher-tools">
+			<button class="main-btn" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+		</div>
+	</div>
+	<div class="dashboard-content animate-fadein" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:32px;align-items:stretch;">
+		<section class="dashboard-section animate-card" id="resources">
+			<h2>Downloadable Resources</h2>
+			<div class="add-note" style="margin-bottom:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+				<input type="file" id="resourceUpload" />
+				<button class="main-btn" onclick="uploadResource()">Upload</button>
+			</div>
+			<ul id="resourceList" style="margin-top:0;padding-left:0;list-style:none;"></ul>
+		</section>
+	</div>
+</div>
+<script src="/assets/js/resources.js"></script>
+<script>
+// Animate section on load
+document.addEventListener('DOMContentLoaded',()=>{
+	document.querySelector('.dashboard-section').classList.add('animate-popin');
+});
+</script>
+{% endblock %}

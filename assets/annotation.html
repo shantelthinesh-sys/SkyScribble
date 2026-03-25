@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Annotation Tools - SkyScribble Teacher</title>
+  <link href="dashboard.html" rel="stylesheet" />
+</head>
+<body>
+  <div class="sidebar"> ... </div>
+  <div class="main-panel">
+    <div class="dashboard-header"><h1>Annotation Tools</h1></div>
+    <div class="dashboard-content">
+      <section class="dashboard-section" id="annotation">
+        <h2>Notes & File Upload</h2>
+        <div class="annotation-tools">
+          <button onclick="addNote()">📝 Add Note</button>
+          <button onclick="highlightText()">🔦 Highlight</button>
+          <button onclick="attachFile()">📎 Attach File</button>
+        </div>
+        <div class="add-note">
+          <input type="text" id="noteInput" placeholder="Type a note..." />
+          <button onclick="saveNote()">Save</button>
+        </div>
+        <div class="note-list" id="noteList"></div>
+        <div style="margin-top:18px;">
+          <input type="file" id="fileInput" />
+          <button onclick="uploadFile()">Upload</button>
+          <div id="fileList"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="/assets/js/annotation.js"></script>
+</body>
+</html>

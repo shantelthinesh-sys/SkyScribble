@@ -1,0 +1,15 @@
+{
+  "studio": "video-animation",
+  "studio_label": "Video Animation",
+  "title": "fish",
+  "user": "tester",
+  "session_id": "20260324_162645_fish",
+  "created_at": "2026-03-24T16:26:45.293802",
+  "drawing": "20260324_162645_fish_drawing.png",
+  "generated": [
+    {
+      "type": "animation",
+      "file": "20260324_162645_fish_video_animation.gif"
+    }
+  ]
+}

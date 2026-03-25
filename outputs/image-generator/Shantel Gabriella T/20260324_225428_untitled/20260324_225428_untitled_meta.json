@@ -1,0 +1,31 @@
+{
+  "module": "image-generator",
+  "module_label": "Image Generator",
+  "title": "untitled",
+  "prompt": "",
+  "animation_prompt": "",
+  "ai_profile": {
+    "style_tint": [
+      0,
+      0,
+      0
+    ],
+    "saturation": 1.0,
+    "motion_strength": 1.2080686725939866,
+    "motion_pattern": "drift",
+    "depth_strength": 1.2,
+    "stroke_color": "#6FA8FF",
+    "object_hint": "default",
+    "mood": "neutral"
+  },
+  "user": "Shantel Gabriella T",
+  "session_id": "20260324_225428_untitled",
+  "created_at": "2026-03-24T22:54:28.081680",
+  "preview_kind": "image",
+  "generated": [
+    {
+      "type": "image",
+      "file": "20260324_225428_untitled_image-generator.png"
+    }
+  ]
+}
