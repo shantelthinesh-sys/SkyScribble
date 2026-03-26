@@ -61,11 +61,17 @@ class CentralizedSaveManager:
 
         result = processor(canvas_bgr=drawing_data, output_dir=target_dir, base_name=base_name)
 
+        primary = Path(result['primary']).resolve()
+        try:
+            primary.relative_to(self.outputs_root.resolve())
+        except ValueError:
+            raise ValueError(f"Output path escapes outputs directory: {primary}")
+
         return {
             "module": module,
             "folder": str(target_dir),
             "result": result,
-            "message": f"Saved {module} output: {Path(result['primary']).name}",
+            "message": f"Saved {module} output: {primary.name}",
         }
 
     def save(self, app_state, canvas_bgr):
