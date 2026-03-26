@@ -47,6 +47,26 @@ def create_web_app():
     def dashboard_page():
         return render_template("dashboard.html")
 
+    @app.get("/student")
+    def student_dashboard_page():
+        return render_template("student_dashboard.html")
+
+    @app.get("/student/assignments")
+    def student_assignments_page():
+        return render_template("student_assignments_stub.html")
+
+    @app.get("/student/notes")
+    def student_notes_page():
+        return render_template("student_notes_stub.html")
+
+    @app.get("/student/gallery")
+    def student_gallery_page():
+        return render_template("student_gallery_stub.html")
+
+    @app.get("/student/progress")
+    def student_progress_page():
+        return render_template("student_progress_stub.html")
+
     @app.get("/classes")
     def classes_page():
         return render_template("classes.html")

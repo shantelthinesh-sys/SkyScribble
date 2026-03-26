@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard · SkyScribble{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/assets/teacher_dashboard.css">
+
+<div class="main-panel animate-fadein">
+  <div class="dash-header">
+    <h1 id="welcomeTitle">Welcome back</h1>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-val" id="statClasses">0</div><div class="stat-label">Classes</div></div>
+    <div class="stat-card"><div class="stat-val" id="statPosted">0</div><div class="stat-label">Assignments Posted</div></div>
+    <div class="stat-card"><div class="stat-val" id="statAnn">0</div><div class="stat-label">Announcements</div></div>
+    <div class="stat-card"><div class="stat-val" id="statRes">0</div><div class="stat-label">Resources Shared</div></div>
+  </div>
+
+  <div class="studio-row">
+    <a class="studio-btn" href="/draw?studio=image-generator"><i class="fas fa-image"></i> Image Generator</a>
+    <a class="studio-btn" href="/draw?studio=video-animation"><i class="fas fa-video"></i> Video Animation</a>
+    <a class="studio-btn" href="/draw?studio=2d-model"><i class="fas fa-draw-polygon"></i> 2D Model</a>
+    <a class="studio-btn" href="/draw?studio=3d-model"><i class="fas fa-cube"></i> 3D Model</a>
+    <a class="studio-btn" href="/draw?studio=3d-animation"><i class="fas fa-play-circle"></i> 3D Animation</a>
+  </div>
+
+  <div class="dash-grid">
+
+    <!-- My Classes -->
+    <section class="dash-section">
+      <h2><i class="fas fa-users"></i> My Classes</h2>
+      <div class="tag-list" id="classList"></div>
+      <div class="input-row">
+        <input type="text" id="classInput" placeholder="Class name (e.g. Grade 7 Art)" />
+        <button class="mini-btn" onclick="addClass()">Add Class</button>
+      </div>
+      <div style="margin-top:10px;"><a class="resource-link" href="/classes">→ Full Class Management</a></div>
+    </section>
+
+    <!-- Post Assignment -->
+    <section class="dash-section">
+      <h2><i class="fas fa-paper-plane"></i> Post Assignment</h2>
+      <div class="input-row">
+        <input type="text" id="postTitle" placeholder="Assignment title" />
+      </div>
+      <div class="input-row">
+        <textarea id="postDesc" placeholder="Description / instructions"></textarea>
+      </div>
+      <div class="input-row">
+        <input type="date" id="postDue" />
+        <select id="postClass">
+          <option value="All Classes">All Classes</option>
+        </select>
+        <button class="mini-btn" onclick="postAssignment()">Post Assignment</button>
+      </div>
+      <div id="postedList" style="margin-top:12px;"></div>
+    </section>
+
+    <!-- Announcements -->
+    <section class="dash-section">
+      <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+      <div class="input-row">
+        <textarea id="annInput" placeholder="Quick announcement for students..."></textarea>
+      </div>
+      <div class="input-row">
+        <select id="annClass">
+          <option value="All Classes">All Classes</option>
+        </select>
+        <button class="mini-btn" onclick="postAnnouncement()">Post Announcement</button>
+      </div>
+      <div id="annList" style="margin-top:12px;"></div>
+    </section>
+
+    <!-- Share Resources -->
+    <section class="dash-section">
+      <h2><i class="fas fa-share-alt"></i> Share Resources</h2>
+      <div class="input-row">
+        <input type="text" id="resTitle" placeholder="Resource name" />
+      </div>
+      <div class="input-row">
+        <input type="text" id="resLink" placeholder="URL or file path" />
+        <button class="mini-btn" onclick="shareResource()">Share</button>
+      </div>
+      <div id="resList" style="margin-top:12px;"></div>
+    </section>
+
+    <!-- Quick Notes -->
+    <section class="dash-section">
+      <h2><i class="fas fa-sticky-note"></i> Quick Notes</h2>
+      <div id="noteList"></div>
+      <div class="input-row">
+        <input type="text" id="noteInput" placeholder="Personal note..." />
+        <button class="mini-btn" onclick="addNote()">Add Note</button>
+      </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="dash-section">
+      <h2><i class="fas fa-link"></i> Quick Links</h2>
+      <ul style="padding-left:18px;color:#a3b6d6;font-size:0.92rem;margin:0;line-height:2;">
+        <li><a class="resource-link" href="/classes"><i class="fas fa-chalkboard-teacher"></i> Classes</a></li>
+        <li><a class="resource-link" href="/assignments"><i class="fas fa-clipboard-list"></i> Assignments</a></li>
+        <li><a class="resource-link" href="/annotation"><i class="fas fa-pen"></i> Annotation Tools</a></li>
+        <li><a class="resource-link" href="/resources"><i class="fas fa-folder-open"></i> Resources</a></li>
+        <li><a class="resource-link" href="/draw"><i class="fas fa-pen-nib"></i> Drawing Studio</a></li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  function getSession() { 
+    try { 
+      return JSON.parse(localStorage.getItem("skyscribble_session")||"null"); 
+    } catch { 
+      return null; 
+    } 
+  }
+  const session = getSession();
+  if (!session || !session.email) { 
+    window.location.href = "/login"; 
+  } else if (session.role === "student") { 
+    window.location.href = "/student"; 
+  } else if (session && session.name) {
+    const name = session.name.split(' ')[0];
+    document.getElementById("welcomeTitle").innerHTML = `Welcome back, <strong>${name}</strong>`;
+  }
+
+  const TK = k => `teacher_${k}`;
+  const SK = k => `shared_${k}`;
+  function load(k) { 
+    try { 
+      return JSON.parse(localStorage.getItem(k)||"[]"); 
+    } catch { 
+      return []; 
+    } 
+  }
+  function save(k, v) { 
+    localStorage.setItem(k, JSON.stringify(v)); 
+  }
+
+  function updateStats() {
+    document.getElementById("statClasses").textContent = load(TK("classes")).length;
+    document.getElementById("statPosted").textContent = load(SK("assignments")).length;
+    document.getElementById("statAnn").textContent = load(SK("announcements")).length;
+    document.getElementById("statRes").textContent = load(SK("resources")).length;
+  }
+
+  function renderClasses() {
+    const classes = load(TK("classes"));
+    const list = document.getElementById("classList");
+    list.innerHTML = classes.length ? '' : '<p style="color:#6c7a92;font-size:0.88rem;margin:8px 0;">No classes yet</p>';
+    classes.forEach((c, i) => {
+      const tag = document.createElement("div"); 
+      tag.className = "tag";
+      tag.innerHTML = `<span>${c}</span><span class="rm" onclick="if(confirm('Remove ${c}?')) removeClass(${i})" title="Remove">×</span>`;
+      list.appendChild(tag);
+    });
+    ['postClass','annClass'].forEach(id => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = '<option value="All Classes">All Classes</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    });
+    updateStats();
+  }
+
+  function addClass() {
+    const val = document.getElementById("classInput").value.trim();
+    if (!val) return alert('Enter class name');
+    const classes = load(TK("classes"));
+    classes.push(val);
+    save(TK("classes"), classes);
+    document.getElementById("classInput").value = '';
+    renderClasses();
+  }
+  function removeClass(i) {
+    const classes = load(TK("classes"));
+    classes.splice(i, 1);
+    save(TK("classes"), classes);
+    renderClasses();
+  }
+  document.getElementById("classInput").addEventListener("keydown", e => e.key==='Enter' && addClass());
+
+  function renderPostedAssignments() {
+    const list = document.getElementById("postedList");
+    const items = load(SK("assignments"));
+    list.innerHTML = items.length ? '' : '<p style="color:#6c7a92;font-size:0.88rem;margin:8px 0;">No assignments posted</p>';
+    items.slice().reverse().slice(0,5).forEach((a, ri) => {
+      const i = items.length - 1 - ri;
+      const el = document.createElement("div"); 
+      el.className = "posted-item";
+      el.innerHTML = `
+        <div>
+          <div class="pi-title">${a.title}</div>
+          ${a.desc ? `<div class="pi-meta">${a.desc}</div>` : ''}
+          <div class="pi-meta">${a['class']} • Due: ${a.due || 'No date'} • ${a.date}</div>
+        </div>
+        <span class="rm" onclick="if(confirm('Delete?')) removePosted(${i})" title="Delete">×</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+
+  function postAssignment() {
+    const title = document.getElementById("postTitle").value.trim();
+    if (!title) return alert('Enter title');
+    const item = {
+      title, 
+      desc: document.getElementById("postDesc").value.trim(),
+      due: document.getElementById("postDue").value,
+      'class': document.getElementById("postClass").value,
+      date: new Date().toLocaleDateString(),
+      done: false
+    };
+    load(SK("assignments")).push(item);
+    save(SK("assignments"), load(SK("assignments")));
+    document.getElementById("postTitle").value = '';
+    document.getElementById("postDesc").value = '';
+    document.getElementById("postDue").value = '';
+    renderPostedAssignments();
+  }
+
+  function removePosted(i) {
+    const items = load(SK("assignments"));
+    items.splice(i, 1);
+    save(SK("assignments"), items);
+    renderPostedAssignments();
+  }
+
+  // Similar patterns for announcements, resources, notes...
+  function renderAnnouncements() {
+    const list = document.getElementById("annList");
+    const items = load(SK("announcements"));
+    list.innerHTML = items.length ? '' : '<p style="color:#6c7a92;font-size:0.88rem;">No announcements</p>';
+    items.slice().reverse().slice(0,4).forEach((a, ri) => {
+      const i = items.length - 1 - ri;
+      const el = document.createElement("div"); 
+      el.className = "ann-item";
+      el.innerHTML = `
+        <div>
+          <div class="ann-text">${a.text}</div>
+          <div class="ann-meta">${a['class']} • ${a.date}</div>
+        </div>
+        <span class="rm" onclick="if(confirm('Delete?')) removeAnn(${i})">×</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+
+  function postAnnouncement() {
+    const text = document.getElementById("annInput").value.trim();
+    if (!text) return alert('Enter announcement');
+    load(SK("announcements")).push({
+      text, 
+      'class': document.getElementById("annClass").value, 
+      date: new Date().toLocaleDateString()
+    });
+    save(SK("announcements"), load(SK("announcements")));
+    document.getElementById("annInput").value = '';
+    renderAnnouncements();
+  }
+
+  function removeAnn(i) {
+    const items = load(SK("announcements"));
+    items.splice(i, 1);
+    save(SK("announcements"), items);
+    renderAnnouncements();
+  }
+
+  function renderResources() {
+    const list = document.getElementById("resList");
+    const items = load(SK("resources"));
+    list.innerHTML = items.length ? '' : '<p style="color:#6c7a92;font-size:0.88rem;">No resources</p>';
+    items.slice().reverse().slice(0,4).forEach((r, ri) => {
+      const i = items.length - 1 - ri;
+      const el = document.createElement("div"); 
+      el.className = "res-item";
+      el.innerHTML = `
+        <div>
+          <div class="res-name">${r.title}</div>
+          <div class="res-meta">${r.link} • ${r.date}</div>
+        </div>
+        <span class="rm" onclick="if(confirm('Delete?')) removeRes(${i})">×</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+
+  function shareResource() {
+    const title = document.getElementById("resTitle").value.trim();
+    if (!title) return alert('Enter title');
+    load(SK("resources")).push({
+      title, link: document.getElementById("resLink").value.trim(),
+      date: new Date().toLocaleDateString()
+    });
+    save(SK("resources"), load(SK("resources")));
+    document.getElementById("resTitle").value = '';
+    document.getElementById("resLink").value = '';
+    renderResources();
+  }
+
+  function removeRes(i) {
+    const items = load(SK("resources"));
+    items.splice(i, 1);
+    save(SK("resources"), items);
+    renderResources();
+  }
+
+  function renderNotes() {
+    const list = document.getElementById("noteList");
+    const notes = load(TK("notes"));
+    list.innerHTML = notes.length ? '' : '<p style="color:#6c7a92;font-size:0.88rem;">No notes</p>';
+    notes.slice().reverse().slice(0,6).forEach((n, i) => {
+      const el = document.createElement("div"); 
+      el.className = "note-item";
+      el.innerHTML = `<span>${n}</span><span class="rm" onclick="if(confirm('Delete note?')) removeNote(${i})">×</span>`;
+      list.appendChild(el);
+    });
+  }
+
+  function addNote() {
+    const val = document.getElementById("noteInput").value.trim();
+    if (!val) return alert('Enter note');
+    load(TK("notes")).push(val);
+    save(TK("notes"), load(TK("notes")));
+    document.getElementById("noteInput").value = '';
+    renderNotes();
+  }
+
+  function removeNote(i) {
+    const notes = load(TK("notes"));
+    notes.splice(i, 1);
+    save(TK("notes"), notes);
+    renderNotes();
+  }
+
+  document.getElementById("noteInput").addEventListener("keydown", e => e.key==='Enter' && addNote());
+
+  // Initialize
+  renderClasses();
+  renderPostedAssignments();
+  renderAnnouncements();
+  renderResources();
+  renderNotes();
+</script>
+{% endblock %}

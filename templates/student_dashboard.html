@@ -1,0 +1,342 @@
+{% extends "student_base.html" %}
+{% block title %}Student Dashboard · SkyScribble{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/assets/student_dashboard.css">
+
+<div class="main-panel animate-fadein">
+  <div class="dash-header">
+    <h1 id="welcomeTitle">Welcome back</h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a class="studio-btn" href="/draw" style="padding:8px 14px;font-size:0.85rem;"><i class="fas fa-pen-nib"></i> Open Studio</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-val" id="statDone">0</div><div class="stat-label">Assignments Done</div></div>
+    <div class="stat-card"><div class="stat-val" id="statPending">0</div><div class="stat-label">Pending</div></div>
+    <div class="stat-card"><div class="stat-val" id="statNotes">0</div><div class="stat-label">Study Notes</div></div>
+    <div class="stat-card"><div class="stat-val" id="statStreak">0</div><div class="stat-label">Day Streak</div></div>
+  </div>
+
+  <!-- Daily Goal -->
+  <div class="goal-bar-wrap">
+    <div class="goal-top">
+      <span class="goal-title"><i class="fas fa-calendar-day"></i> Today's Goal</span>
+      <span class="goal-pct" id="goalPct">0%</span>
+    </div>
+    <div class="goal-bar"><div class="goal-bar-fill" id="goalFill" style="width:0%"></div></div>
+    <div class="goal-input-row">
+      <input type="text" id="goalInput" placeholder="Set today's goal (e.g. Finish Art Project)" />
+      <button class="mini-btn" onclick="setGoal()">Set Goal</button>
+      <button class="mini-btn secondary" onclick="completeGoal()">Mark Done</button>
+    </div>
+    <div id="goalText" style="margin-top:8px;font-size:0.88rem;color:#a8c8ff;"></div>
+  </div>
+
+  <!-- Studio launcher -->
+  <div class="studio-row">
+    <a class="studio-btn" href="/draw?studio=image-generator"><i class="fas fa-image"></i> Image Generator</a>
+    <a class="studio-btn" href="/draw?studio=video-animation"><i class="fas fa-video"></i> Video Animation</a>
+    <a class="studio-btn" href="/draw?studio=2d-model"><i class="fas fa-draw-polygon"></i> 2D Model</a>
+    <a class="studio-btn" href="/draw?studio=3d-model"><i class="fas fa-cube"></i> 3D Model</a>
+    <a class="studio-btn" href="/draw?studio=3d-animation"><i class="fas fa-play-circle"></i> 3D Animation</a>
+  </div>
+
+  <div class="dash-grid">
+
+    <!-- Assignments -->
+    <section class="dash-section">
+      <h2><i class="fas fa-clipboard-list"></i> My Assignments</h2>
+      <div id="assignList"></div>
+      <div class="input-row">
+        <input type="text" id="assignInput" placeholder="Assignment title" />
+        <input type="date" id="assignDue" />
+        <button class="mini-btn" onclick="addAssignment()">Add Assignment</button>
+      </div>
+    </section>
+
+    <!-- Upcoming Deadlines -->
+    <section class="dash-section">
+      <h2><i class="fas fa-calendar-alt"></i> Upcoming Deadlines</h2>
+      <div id="deadlineList"><p style="color:#6c7a92;font-size:0.88rem;">No upcoming deadlines.</p></div>
+    </section>
+
+    <!-- Study Notes -->
+    <section class="dash-section">
+      <h2><i class="fas fa-sticky-note"></i> Study Notes</h2>
+      <div id="noteList"></div>
+      <div class="input-row">
+        <input type="text" id="noteInput" placeholder="Add a quick note..." />
+        <select id="noteTag">
+          <option value="General">General</option>
+          <option value="Art">Art</option>
+          <option value="Math">Math</option>
+          <option value="Science">Science</option>
+          <option value="English">English</option>
+        </select>
+        <button class="mini-btn" onclick="addNote()">Add Note</button>
+      </div>
+    </section>
+
+    <!-- Subject Progress -->
+    <section class="dash-section">
+      <h2><i class="fas fa-chart-line"></i> Subject Progress</h2>
+      <div id="progressList"></div>
+      <div class="subj-input-row">
+        <input type="text" id="subjName" placeholder="Subject" />
+        <input type="number" id="subjPct" placeholder="%" min="0" max="100" />
+        <button class="mini-btn" onclick="addSubject()">Update</button>
+      </div>
+    </section>
+
+    <!-- Achievements -->
+    <section class="dash-section">
+      <h2><i class="fas fa-trophy"></i> Achievements</h2>
+      <div class="badge-row" id="badgeRow">
+        <div class="badge" id="badge-first"><span class="badge-icon"><i class="fas fa-pen-nib"></i></span>First Drawing</div>
+        <div class="badge" id="badge-streak"><span class="badge-icon"><i class="fas fa-fire"></i></span>3-Day Streak</div>
+        <div class="badge" id="badge-notes"><span class="badge-icon"><i class="fas fa-sticky-note"></i></span>5 Notes</div>
+        <div class="badge" id="badge-done"><span class="badge-icon"><i class="fas fa-check-circle"></i></span>5 Assignments</div>
+        <div class="badge" id="badge-3d"><span class="badge-icon"><i class="fas fa-cube"></i></span>3D Creator</div>
+      </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="dash-section">
+      <h2><i class="fas fa-link"></i> Quick Links</h2>
+      <ul style="padding-left:18px;color:#a3b6d6;font-size:0.92rem;margin:0;line-height:2;">
+        <li><a class="link" href="/draw"><i class="fas fa-pen-nib"></i> Drawing Studio</a></li>
+        <li><a class="link" href="/draw?studio=3d-model"><i class="fas fa-cube"></i> 3D Model Studio</a></li>
+        <li><a class="link" href="/draw?studio=video-animation"><i class="fas fa-video"></i> Video Animation</a></li>
+        <li><a class="link" href="/student" onclick="alert('Notes feature coming soon. Use dashboard notes section.');return false;"><i class="fas fa-sticky-note"></i> All My Notes</a></li>
+        <li><a class="link" href="/student" onclick="alert('Gallery shows saved drawings in outputs/ folder. Check Studio > Gallery.');return false;"><i class="fas fa-images"></i> My Gallery</a></li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  function getSession() {
+    try { return JSON.parse(localStorage.getItem("skyscribble_session") || "null"); } catch { return null; }
+  }
+  const session = getSession();
+  if (!session || !session.email) { window.location.href = "/login"; }
+  else if (session.role === "teacher") { window.location.href = "/dashboard"; }
+  else if (session && session.name) {
+    const name = session.name.split(' ')[0]; // First name only for brevity
+    document.getElementById("welcomeTitle").textContent = `Welcome back, ${name}`;
+  }
+
+  const SK = k => `stu_${k}`;
+  function load(k) { try { return JSON.parse(localStorage.getItem(SK(k)) || "[]"); } catch { return []; } }
+  function loadObj(k, def) { try { return JSON.parse(localStorage.getItem(SK(k)) || JSON.stringify(def)); } catch { return def; } }
+  function save(k, v) { localStorage.setItem(SK(k), JSON.stringify(v)); }
+
+  // Update all stats
+  function updateStats() {
+    const assigns = load("assignments");
+    const done = assigns.filter(a => a.done).length;
+    const pending = assigns.length - done;
+    document.getElementById("statDone").textContent = done;
+    document.getElementById("statPending").textContent = pending;
+    document.getElementById("statNotes").textContent = load("notes").length;
+    const streak = loadObj("streak", { count: 0, last: "" });
+    document.getElementById("statStreak").textContent = streak.count;
+    checkBadges(done, load("notes").length);
+  }
+
+  // Streak logic
+  function updateStreak() {
+    const today = new Date().toDateString();
+    const streak = loadObj("streak", { count: 0, last: "" });
+    if (streak.last !== today) {
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      streak.count = (streak.last === yesterday) ? streak.count + 1 : 1;
+      streak.last = today;
+      save("streak", streak);
+    }
+  }
+  updateStreak();
+
+  // Daily Goal
+  function renderGoal() {
+    const goal = loadObj("goal", { text: "", done: false });
+    const pct = goal.done ? 100 : (goal.text ? 50 : 0);
+    document.getElementById("goalFill").style.width = pct + "%";
+    document.getElementById("goalPct").textContent = pct + "%";
+    document.getElementById("goalText").textContent = goal.text ? (goal.done ? "Completed: " + goal.text : "Goal: " + goal.text) : "";
+    if (goal.text) document.getElementById("goalInput").value = goal.text;
+  }
+  function setGoal() {
+    const val = document.getElementById("goalInput").value.trim();
+    if (!val) return alert('Please enter a goal.');
+    save("goal", { text: val, done: false });
+    renderGoal();
+  }
+  function completeGoal() {
+    const goal = loadObj("goal", { text: "", done: false });
+    if (!goal.text) return alert('No goal set.');
+    goal.done = true;
+    save("goal", goal);
+    renderGoal();
+    updateStats();
+  }
+  document.getElementById("goalInput").addEventListener("keydown", e => { if (e.key === "Enter") setGoal(); });
+
+  // Assignments
+  function renderAssignments() {
+    const list = document.getElementById("assignList");
+    const assigns = load("assignments");
+    list.innerHTML = assigns.length ? "" : "<p style='color:#6c7a92;font-size:0.88rem;margin:0;'>No assignments added yet. Add one above.</p>";
+    assigns.forEach((a, i) => {
+      const today = new Date().toISOString().split("T")[0];
+      const overdue = !a.done && a.due && a.due < today;
+      const el = document.createElement("div");
+      el.className = `assign-item${a.done ? ' done' : ''}`;
+      el.innerHTML = `
+        <input type="checkbox" ${a.done ? 'checked' : ''} onchange="toggleAssign(${i})" />
+        <span class="assign-title">${a.title}</span>
+        ${a.due ? `<span class="due ${overdue ? 'overdue' : ''}">${overdue ? 'Overdue ' : ''}${a.due}</span>` : ''}
+        <span class="rm" onclick="removeAssign(${i});" title="Remove">×</span>`;
+      list.appendChild(el);
+    });
+    renderDeadlines();
+    updateStats();
+  }
+  function addAssignment() {
+    const title = document.getElementById("assignInput").value.trim();
+    const due = document.getElementById("assignDue").value;
+    if (!title) return alert('Please enter assignment title.');
+    load("assignments").push({ title, due, done: false });
+    save("assignments", load("assignments"));
+    document.getElementById("assignInput").value = '';
+    document.getElementById("assignDue").value = '';
+    renderAssignments();
+  }
+  function toggleAssign(i) {
+    const assigns = load("assignments");
+    assigns[i].done = !assigns[i].done;
+    save("assignments", assigns);
+    renderAssignments();
+  }
+  function removeAssign(i) {
+    if (confirm('Remove this assignment?')) {
+      const assigns = load("assignments");
+      assigns.splice(i, 1);
+      save("assignments", assigns);
+      renderAssignments();
+    }
+  }
+  document.getElementById("assignInput").addEventListener("keydown", e => { if (e.key === "Enter") addAssignment(); });
+
+  // Deadlines
+  function renderDeadlines() {
+    const list = document.getElementById("deadlineList");
+    const today = new Date().toISOString().split("T")[0];
+    const upcoming = load("assignments").filter(a => !a.done && a.due).sort((a,b) => a.due.localeCompare(b.due)).slice(0,5);
+    if (!upcoming.length) {
+      list.innerHTML = "<p style='color:#6c7a92;font-size:0.88rem;margin:0;'>No upcoming deadlines.</p>";
+      return;
+    }
+    list.innerHTML = '';
+    upcoming.forEach(a => {
+      const diffDays = Math.ceil((new Date(a.due) - new Date(today)) / 86400000);
+      const cls = diffDays < 0 ? 'overdue' : diffDays <= 2 ? 'soon' : '';
+      const label = diffDays < 0 ? `${Math.abs(diffDays)}d overdue` : diffDays === 0 ? 'Today' : `${diffDays}d`;
+      const el = document.createElement("div");
+      el.className = 'deadline-item';
+      el.innerHTML = `<span class="dl-title">${a.title}</span><span class="dl-date ${cls}">${label}</span>`;
+      list.appendChild(el);
+    });
+  }
+
+  // Notes
+  function renderNotes() {
+    const list = document.getElementById("noteList");
+    const notes = load("notes");
+    list.innerHTML = notes.length ? '' : "<p style='color:#6c7a92;font-size:0.88rem;margin:0;'>No notes added yet.</p>";
+    notes.slice(-5).reverse().forEach((n, i) => {
+      const realIdx = notes.length - 1 - i;
+      const el = document.createElement("div");
+      el.className = 'note-item';
+      el.innerHTML = `<span>${n.text}</span><span class="note-tag">${n.tag}</span><span class="rm" onclick="removeNote(${realIdx});" title="Remove">×</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+  function addNote() {
+    const text = document.getElementById("noteInput").value.trim();
+    const tag = document.getElementById("noteTag").value;
+    if (!text) return alert('Please enter note text.');
+    load("notes").push({ text, tag, date: new Date().toLocaleDateString() });
+    save("notes", load("notes"));
+    document.getElementById("noteInput").value = '';
+    renderNotes();
+  }
+  function removeNote(i) {
+    if (confirm('Remove this note?')) {
+      const notes = load("notes");
+      notes.splice(i, 1);
+      save("notes", notes);
+      renderNotes();
+    }
+  }
+  document.getElementById("noteInput").addEventListener("keydown", e => { if (e.key === "Enter") addNote(); });
+
+  // Progress
+  function renderProgress() {
+    const list = document.getElementById("progressList");
+    const subjects = load("subjects");
+    list.innerHTML = subjects.length ? '' : "<p style='color:#6c7a92;font-size:0.88rem;margin:0;'>No subjects tracked yet.</p>";
+    subjects.forEach((s, i) => {
+      const el = document.createElement("div");
+      el.className = 'subject-row';
+      el.innerHTML = `
+        <span class="subj-name">${s.name}</span>
+        <div class="subj-bar"><div class="subj-bar-fill" style="width:${s.pct}%"></div></div>
+        <span class="subj-pct">${s.pct}%</span>
+        <span style="cursor:pointer;color:#ff7a7a;font-size:0.9rem;margin-left:6px;" onclick="removeSubject(${i});" title="Remove">×</span>`;
+      list.appendChild(el);
+    });
+  }
+  function addSubject() {
+    const name = document.getElementById("subjName").value.trim();
+    const pct = Math.min(100, Math.max(0, parseInt(document.getElementById("subjPct").value) || 0));
+    if (!name) return alert('Please enter subject name.');
+    const subjects = load("subjects");
+    const existingIdx = subjects.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+    if (existingIdx >= 0) subjects[existingIdx].pct = pct;
+    else subjects.push({ name, pct });
+    save("subjects", subjects);
+    document.getElementById("subjName").value = '';
+    document.getElementById("subjPct").value = '';
+    renderProgress();
+  }
+  function removeSubject(i) {
+    if (confirm('Remove subject?')) {
+      const subjects = load("subjects");
+      subjects.splice(i, 1);
+      save("subjects", subjects);
+      renderProgress();
+    }
+  }
+
+  // Badges
+  function checkBadges(doneCount, notesCount) {
+    if (doneCount >= 1) document.getElementById('badge-first').classList.add('earned');
+    if (doneCount >= 5) document.getElementById('badge-done').classList.add('earned');
+    if (notesCount >= 5) document.getElementById('badge-notes').classList.add('earned');
+    const streak = loadObj("streak", { count: 0 });
+    if (streak.count >= 3) document.getElementById('badge-streak').classList.add('earned');
+  }
+
+  // Initialize everything
+  renderGoal();
+  renderAssignments();
+  renderNotes();
+  renderProgress();
+  updateStats();
+</script>
+{% endblock %}
