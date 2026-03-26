@@ -1,0 +1,31 @@
+{
+  "module": "video-animation",
+  "module_label": "Video Animation",
+  "title": "drawing",
+  "prompt": "drawing",
+  "animation_prompt": "make the fish move",
+  "ai_profile": {
+    "style_tint": [
+      0,
+      0,
+      0
+    ],
+    "saturation": 1.0,
+    "motion_strength": 1.2080686725939866,
+    "motion_pattern": "drift",
+    "depth_strength": 1.2,
+    "stroke_color": "#6FA8FF",
+    "object_hint": "fish",
+    "mood": "neutral"
+  },
+  "user": "SkyScribble Admin",
+  "session_id": "20260325_171454_drawing",
+  "created_at": "2026-03-25T17:15:01.022084",
+  "preview_kind": "animation",
+  "generated": [
+    {
+      "type": "animation",
+      "file": "20260325_171454_drawing_video-animation.gif"
+    }
+  ]
+}

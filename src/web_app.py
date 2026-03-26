@@ -4,16 +4,54 @@ from flask import Flask, jsonify, request, send_file, send_from_directory, rende
 
 from src.ai.studio_ai import build_assistant_message, choose_target_studio
 from src.studio_pipeline import STUDIO_LABELS, save_output
+from src.models import db, User, Assignment, Submission
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, date
 
 
 def create_web_app():
-
     project_root = Path(__file__).resolve().parents[1]
     assets_dir = project_root / "assets"
     templates_dir = project_root / "templates"
 
     app = Flask(__name__, static_folder=str(assets_dir), static_url_path="/assets", template_folder=str(templates_dir))
+    app.config['SECRET_KEY'] = 'skyscribble_dev_key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///skyscribble.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'login_page'
+
+    with app.app_context():
+        db.create_all()
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    assets_dir = project_root / "assets"
+    templates_dir = project_root / "templates"
+
+    app = Flask(__name__, static_folder=str(assets_dir), static_url_path="/assets", template_folder=str(templates_dir))
+    app.config['SECRET_KEY'] = 'skyscribble_dev_key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///skyscribble.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+login_manager.login_view = 'login_page'
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
     outputs_dir = project_root / "outputs"
+
+
 
     @app.errorhandler(404)
     def page_not_found(e):

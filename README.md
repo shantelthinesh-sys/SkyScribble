@@ -24,6 +24,8 @@ It also includes a modular Kivy implementation with:
   - Clear canvas: fist
 - Keyboard shortcuts:
   - `c` clear canvas
+  - `r` toggle video recording (saves to `outputs/recordings/` as `.mp4`)
+  - `s` save screenshot (saves to `outputs/recordings/` as `.png`)
   - `q` quit
 
 ## Setup

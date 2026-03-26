@@ -1,85 +1,369 @@
 {% extends "base.html" %}
+{% block title %}Teacher Dashboard · SkyScribble{% endblock %}
 {% block content %}
 <style>
-.main-panel { padding: 32px 32px 0 32px; }
-.dashboard-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
-.dashboard-header h1 { margin: 0; font-size: 1.6rem; color: #eaf2ff; }
-.teacher-tools { display: flex; gap: 10px; flex-wrap: wrap; }
-.main-btn { background: linear-gradient(135deg,#3f8bff,#2850d4); color: #eef4ff; border: 1px solid rgba(123,171,255,0.42); border-radius: 9px; padding: 9px 18px; font-weight: 700; cursor: pointer; }
-.main-btn:hover { opacity: 0.88; }
-.dashboard-content { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 32px; align-items: stretch; }
-.dashboard-section { background: #0d1b33; border: 1px solid #1a2e50; border-radius: 14px; padding: 22px 20px; cursor: pointer; transition: background 0.18s, transform 0.12s; }
-.dashboard-section:hover, .dashboard-section:focus { background: #16203a; outline: none; transform: translateY(-2px) scale(1.012); }
-.dashboard-section h2 { margin-top: 0; font-size: 1.35rem; color: #9bc2ff; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-.dashboard-section ul { padding-left: 18px; color: #a3b6d6; font-size: 1.08rem; }
-.dashboard-section .add-note { display: flex; gap: 8px; margin-top: 12px; }
-.dashboard-section .add-note input { flex: 1; padding: 7px 10px; border-radius: 6px; border: 1px solid #232b3d; background: #1a223a; color: #e6eaf3; }
-.dashboard-section .note-list { margin-top: 10px; color: #e6eaf3; font-size: 0.98rem; }
-.due-date { color: #7fffa1; font-weight: 600; margin-left: 8px; }
-.due-date.muted { color: #6c7a92; }
-.animate-fadein { animation: fadein 0.7s cubic-bezier(.4,2,.6,1); }
-.animate-slidein { animation: slidein 0.7s cubic-bezier(.4,2,.6,1); }
-.animate-card { animation: cardin 0.8s cubic-bezier(.4,2,.6,1); }
-@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slidein { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
-@keyframes cardin { from { opacity: 0; transform: scale(0.98) translateY(24px); } to { opacity: 1; transform: none; } }
-@media (max-width: 900px) { .main-panel { padding: 16px 8px 0 8px; } }
+  .main-panel { padding: 28px 32px; overflow-y: auto; }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+  .dash-header h1 { margin: 0; font-size: 1.5rem; color: #eaf2ff; }
+
+  .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 12px; margin-bottom: 22px; }
+  .stat-card { background: #0d1b33; border: 1px solid #1a2e50; border-radius: 12px; padding: 16px 18px; }
+  .stat-card .stat-val { font-size: 1.8rem; font-weight: 700; color: #3f8bff; }
+  .stat-card .stat-label { font-size: 0.8rem; color: #6c7a92; margin-top: 2px; }
+
+  .studio-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+  .studio-btn {
+    background: linear-gradient(135deg,#3f8bff,#2850d4); color: #eef4ff;
+    border: 1px solid rgba(123,171,255,0.42); border-radius: 9px; padding: 9px 16px;
+    font-weight: 700; cursor: pointer; font-size: 0.88rem;
+    transition: opacity 0.18s, transform 0.12s; text-decoration: none; display: inline-block;
+  }
+  .studio-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 20px; }
+  .dash-section { background: #0d1b33; border: 1px solid #1a2e50; border-radius: 14px; padding: 20px; transition: background 0.18s; }
+  .dash-section:hover { background: #111f3a; }
+  .dash-section h2 { margin: 0 0 14px; font-size: 1.05rem; color: #9bc2ff; display: flex; align-items: center; gap: 8px; }
+
+  .input-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .input-row input, .input-row select, .input-row textarea {
+    flex: 1; padding: 8px 10px; border-radius: 7px;
+    border: 1px solid #1e2e48; background: #0a1628; color: #e6eaf3;
+    font-size: 0.9rem; outline: none; font-family: inherit;
+  }
+  .input-row input:focus, .input-row textarea:focus { border-color: rgba(63,139,255,0.5); }
+  .input-row textarea { resize: vertical; min-height: 60px; }
+
+  .mini-btn {
+    background: linear-gradient(135deg,#3f8bff,#2850d4); color: #eef4ff;
+    border: 1px solid rgba(123,171,255,0.42); border-radius: 7px; padding: 8px 14px;
+    font-weight: 700; cursor: pointer; font-size: 0.88rem; white-space: nowrap;
+    transition: opacity 0.18s; font-family: inherit;
+  }
+  .mini-btn:hover { opacity: 0.85; }
+  .mini-btn.secondary { background: rgba(63,139,255,0.12); border-color: rgba(63,139,255,0.28); color: #8cb5ff; }
+  .mini-btn.danger { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.3); color: #ff7a7a; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag { background: rgba(63,139,255,0.12); border: 1px solid rgba(63,139,255,0.28); border-radius: 999px; padding: 4px 12px; font-size: 0.82rem; color: #8cb5ff; display: flex; align-items: center; gap: 6px; }
+  .tag .rm { cursor: pointer; color: #ff7a7a; font-size: 0.75rem; }
+
+  /* Posted items */
+  .posted-item {
+    background: rgba(63,139,255,0.06); border: 1px solid rgba(63,139,255,0.15);
+    border-radius: 9px; padding: 10px 14px; margin-top: 8px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  }
+  .posted-item .pi-body { flex: 1; }
+  .posted-item .pi-title { font-size: 0.92rem; color: #c8dcff; font-weight: 600; }
+  .posted-item .pi-meta { font-size: 0.78rem; color: #6c7a92; margin-top: 3px; }
+  .posted-item .pi-due { color: #7fffa1; font-size: 0.78rem; }
+  .posted-item .rm { cursor: pointer; color: #ff7a7a; font-size: 0.8rem; flex-shrink: 0; }
+
+  /* Announcement */
+  .ann-item {
+    background: rgba(255,183,77,0.07); border-left: 3px solid #ffb74d;
+    border-radius: 6px; padding: 10px 12px; margin-top: 8px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+  }
+  .ann-item .ann-text { font-size: 0.9rem; color: #ffe0a0; flex: 1; }
+  .ann-item .ann-meta { font-size: 0.75rem; color: #6c7a92; margin-top: 3px; }
+  .ann-item .rm { cursor: pointer; color: #ff7a7a; font-size: 0.8rem; flex-shrink: 0; }
+
+  /* Resource item */
+  .res-item {
+    background: rgba(103,224,178,0.06); border: 1px solid rgba(103,224,178,0.15);
+    border-radius: 9px; padding: 10px 14px; margin-top: 8px;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .res-item .res-name { font-size: 0.9rem; color: #a8e6cf; flex: 1; }
+  .res-item .res-meta { font-size: 0.75rem; color: #6c7a92; }
+  .res-item .rm { cursor: pointer; color: #ff7a7a; font-size: 0.8rem; }
+
+  .note-item { background: rgba(63,139,255,0.07); border: 1px solid rgba(63,139,255,0.18); border-radius: 8px; padding: 8px 12px; font-size: 0.88rem; color: #c8dcff; margin-top: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .note-item .rm { cursor: pointer; color: #ff7a7a; font-size: 0.8rem; flex-shrink: 0; }
+
+  .resource-link { color: #8cb5ff; text-decoration: none; font-size: 0.88rem; }
+  .resource-link:hover { text-decoration: underline; }
+
+  .animate-fadein { animation: fadein 0.5s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (max-width: 900px) { .main-panel { padding: 14px 10px; } }
 </style>
+
 <div class="main-panel animate-fadein">
-	<div class="dashboard-header animate-slidein">
-		<h1 id="welcomeTitle">Welcome to Your Dashboard</h1>
-		<div class="teacher-tools">
-			<button class="main-btn" onclick="window.location.href='/draw?studio=image-generator'">Drawing Studio</button>
-			<button class="main-btn" onclick="window.location.href='/draw?studio=video-animation'">Video Animation</button>
-			<button class="main-btn" onclick="window.location.href='/draw?studio=2d-model'">2D Model</button>
-			<button class="main-btn" onclick="window.location.href='/draw?studio=3d-model'">3D Model</button>
-			<button class="main-btn" onclick="window.location.href='/draw?studio=3d-animation'">3D Animation</button>
-		</div>
-	</div>
-	<div class="dashboard-content">
-		<section class="dashboard-section animate-card" id="classes" tabindex="0" onclick="window.location.href='/classes'">
-			<h2>My Classes</h2>
-			<ul id="classList">
-				<li>Grade 7A</li>
-				<li>Grade 8B</li>
-			</ul>
-			<div class="add-note">
-				<input type="text" id="classInput" placeholder="Add new class (e.g. Grade 7A)" />
-				<button class="main-btn" onclick="addClass();event.stopPropagation();">Add</button>
-			</div>
-		</section>
-		<section class="dashboard-section animate-card" id="assignments" tabindex="0" onclick="window.location.href='/assignments'">
-			<h2>Assignments</h2>
-			<ul>
-				<li>Art Project: "Spring Nature" <span class="due-date">Due: 2026-03-30</span></li>
-				<li>Homework: "Draw Your Pet" <span class="due-date muted">Due: 2026-04-05</span></li>
-			</ul>
-		</section>
-		<section class="dashboard-section animate-card" id="annotation" tabindex="0" onclick="window.location.href='/annotation'">
-			<h2>Annotation Tools</h2>
-			<div style="display:flex;gap:10px;flex-wrap:wrap;">
-				<button class="main-btn" onclick="addNote();event.stopPropagation();">Add Note</button>
-				<button class="main-btn" onclick="highlightText();event.stopPropagation();">Highlight</button>
-				<button class="main-btn" onclick="attachFile();event.stopPropagation();">Attach File</button>
-			</div>
-			<div class="add-note" style="margin-top:12px;">
-				<input type="text" id="noteInput" placeholder="Type a note..." />
-				<button class="main-btn" onclick="saveNote();event.stopPropagation();">Save</button>
-			</div>
-			<div class="note-list" id="noteList"></div>
-		</section>
-		<section class="dashboard-section animate-card" id="resources" tabindex="0" onclick="window.location.href='/resources'">
-			<h2>Resources</h2>
-			<ul>
-				<li><a href="#" onclick="event.stopPropagation();">Lesson Plan Template</a></li>
-				<li><a href="#" onclick="event.stopPropagation();">Student Progress Sheet</a></li>
-			</ul>
-		</section>
-	</div>
+  <div class="dash-header">
+    <h1 id="welcomeTitle">Welcome back 👋</h1>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-val" id="statClasses">0</div><div class="stat-label">Classes</div></div>
+    <div class="stat-card"><div class="stat-val" id="statPosted">0</div><div class="stat-label">Assignments Posted</div></div>
+    <div class="stat-card"><div class="stat-val" id="statAnn">0</div><div class="stat-label">Announcements</div></div>
+    <div class="stat-card"><div class="stat-val" id="statRes">0</div><div class="stat-label">Resources Shared</div></div>
+  </div>
+
+  <div class="studio-row">
+    <a class="studio-btn" href="/draw?studio=image-generator">🎨 Image Generator</a>
+    <a class="studio-btn" href="/draw?studio=video-animation">🎬 Video Animation</a>
+    <a class="studio-btn" href="/draw?studio=2d-model">✏️ 2D Model</a>
+    <a class="studio-btn" href="/draw?studio=3d-model">🧊 3D Model</a>
+    <a class="studio-btn" href="/draw?studio=3d-animation">🌀 3D Animation</a>
+  </div>
+
+  <div class="dash-grid">
+
+    <!-- My Classes -->
+    <section class="dash-section">
+      <h2><i class="fas fa-chalkboard-teacher"></i> My Classes</h2>
+      <div class="tag-list" id="classList"></div>
+      <div class="input-row">
+        <input type="text" id="classInput" placeholder="Add class (e.g. Grade 7A)" />
+        <button class="mini-btn" onclick="addClass()">Add</button>
+      </div>
+      <div style="margin-top:10px;"><a class="resource-link" href="/classes">→ Manage all classes</a></div>
+    </section>
+
+    <!-- Post Assignment to Students -->
+    <section class="dash-section">
+      <h2><i class="fas fa-paper-plane"></i> Post Assignment to Students</h2>
+      <div class="input-row">
+        <input type="text" id="postTitle" placeholder="Assignment title" />
+      </div>
+      <div class="input-row" style="margin-top:8px;">
+        <textarea id="postDesc" placeholder="Description (optional)"></textarea>
+      </div>
+      <div class="input-row" style="margin-top:8px;">
+        <input type="date" id="postDue" style="max-width:160px;" />
+        <select id="postClass" style="max-width:140px;">
+          <option value="All Classes">All Classes</option>
+        </select>
+        <button class="mini-btn" onclick="postAssignment()"><i class="fas fa-paper-plane"></i> Post</button>
+      </div>
+      <div id="postedList" style="margin-top:10px;"></div>
+    </section>
+
+    <!-- Announcements -->
+    <section class="dash-section">
+      <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+      <div class="input-row">
+        <textarea id="annInput" placeholder="Write an announcement for students..."></textarea>
+      </div>
+      <div class="input-row" style="margin-top:8px;">
+        <select id="annClass" style="max-width:160px;">
+          <option value="All Classes">All Classes</option>
+        </select>
+        <button class="mini-btn" onclick="postAnnouncement()">📢 Post</button>
+      </div>
+      <div id="annList" style="margin-top:10px;"></div>
+    </section>
+
+    <!-- Share Resources -->
+    <section class="dash-section">
+      <h2><i class="fas fa-share-alt"></i> Share Resources with Students</h2>
+      <div class="input-row">
+        <input type="text" id="resTitle" placeholder="Resource title (e.g. Chapter 3 Notes)" />
+      </div>
+      <div class="input-row" style="margin-top:8px;">
+        <input type="text" id="resLink" placeholder="Link or description" />
+        <button class="mini-btn" onclick="shareResource()"><i class="fas fa-share"></i> Share</button>
+      </div>
+      <div id="resList" style="margin-top:10px;"></div>
+    </section>
+
+    <!-- Teacher Notes -->
+    <section class="dash-section">
+      <h2><i class="fas fa-sticky-note"></i> My Notes</h2>
+      <div id="noteList"></div>
+      <div class="input-row" style="margin-top:10px;">
+        <input type="text" id="noteInput" placeholder="Add a private note..." />
+        <button class="mini-btn" onclick="addNote()">Add</button>
+      </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="dash-section">
+      <h2><i class="fas fa-link"></i> Quick Links</h2>
+      <ul style="padding-left:18px;color:#a3b6d6;font-size:0.92rem;margin:0;line-height:2.2;">
+        <li><a class="resource-link" href="/classes">📚 Manage Classes</a></li>
+        <li><a class="resource-link" href="/assignments">📋 All Assignments</a></li>
+        <li><a class="resource-link" href="/annotation">✏️ Annotation Tools</a></li>
+        <li><a class="resource-link" href="/resources">📁 Resources</a></li>
+        <li><a class="resource-link" href="/draw">🎨 Drawing Studio</a></li>
+      </ul>
+    </section>
+
+  </div>
 </div>
+
 <script>
-document.querySelectorAll('.dashboard-section button, .dashboard-section input, .dashboard-section a').forEach(function(el) {
-  el.addEventListener('click', function(e) { e.stopPropagation(); });
-});
+  function getSession() { try { return JSON.parse(localStorage.getItem("skyscribble_session")||"null"); } catch { return null; } }
+  const session = getSession();
+  if (!session || !session.email) { window.location.href = "/login"; }
+  else if (session.role === "student") { window.location.href = "/student"; }
+  else if (session && session.name) document.getElementById("welcomeTitle").textContent = `Welcome back, ${session.name} 👋`;
+
+  const TK = k => `teacher_${k}`;
+  const SK = k => `shared_${k}`;  // shared with students
+  function load(k) { try { return JSON.parse(localStorage.getItem(k)||"[]"); } catch { return []; } }
+  function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+  function updateStats() {
+    document.getElementById("statClasses").textContent = load(TK("classes")).length;
+    document.getElementById("statPosted").textContent = load(SK("assignments")).length;
+    document.getElementById("statAnn").textContent = load(SK("announcements")).length;
+    document.getElementById("statRes").textContent = load(SK("resources")).length;
+  }
+
+  // ── Classes ────────────────────────────────────────────
+  function renderClasses() {
+    const classes = load(TK("classes"));
+    const list = document.getElementById("classList");
+    list.innerHTML = "";
+    classes.forEach((c, i) => {
+      const tag = document.createElement("div"); tag.className = "tag";
+      tag.innerHTML = `${c} <span class="rm" onclick="removeClass(${i})">✕</span>`;
+      list.appendChild(tag);
+    });
+    // Sync class dropdowns
+    ["postClass","annClass"].forEach(id => {
+      const sel = document.getElementById(id);
+      const cur = sel.value;
+      sel.innerHTML = `<option value="All Classes">All Classes</option>` +
+        classes.map(c => `<option value="${c}">${c}</option>`).join("");
+      sel.value = cur;
+    });
+    updateStats();
+  }
+  function addClass() {
+    const input = document.getElementById("classInput");
+    const val = input.value.trim(); if (!val) return;
+    const classes = load(TK("classes")); classes.push(val);
+    save(TK("classes"), classes); input.value = ""; renderClasses();
+  }
+  function removeClass(i) {
+    const classes = load(TK("classes")); classes.splice(i,1);
+    save(TK("classes"), classes); renderClasses();
+  }
+  document.getElementById("classInput").addEventListener("keydown", e => { if(e.key==="Enter") addClass(); });
+
+  // ── Post Assignment ────────────────────────────────────
+  function renderPosted() {
+    const list = document.getElementById("postedList");
+    const items = load(SK("assignments"));
+    list.innerHTML = items.length ? "" : "<p style='color:#6c7a92;font-size:0.85rem;'>No assignments posted yet.</p>";
+    items.slice().reverse().forEach((a, ri) => {
+      const i = items.length - 1 - ri;
+      const el = document.createElement("div"); el.className = "posted-item";
+      el.innerHTML = `<div class="pi-body">
+        <div class="pi-title">${a.title}</div>
+        ${a.desc ? `<div class="pi-meta">${a.desc}</div>` : ""}
+        <div class="pi-meta">${a.class} · <span class="pi-due">Due: ${a.due||"No date"}</span> · Posted ${a.date}</div>
+      </div><span class="rm" onclick="removePosted(${i})">✕</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+  function postAssignment() {
+    const title = document.getElementById("postTitle").value.trim();
+    if (!title) return;
+    const items = load(SK("assignments"));
+    items.push({
+      title, desc: document.getElementById("postDesc").value.trim(),
+      due: document.getElementById("postDue").value,
+      class: document.getElementById("postClass").value,
+      date: new Date().toLocaleDateString(), done: false
+    });
+    save(SK("assignments"), items);
+    document.getElementById("postTitle").value = "";
+    document.getElementById("postDesc").value = "";
+    document.getElementById("postDue").value = "";
+    renderPosted();
+  }
+  function removePosted(i) {
+    const items = load(SK("assignments")); items.splice(i,1);
+    save(SK("assignments"), items); renderPosted();
+  }
+
+  // ── Announcements ──────────────────────────────────────
+  function renderAnnouncements() {
+    const list = document.getElementById("annList");
+    const items = load(SK("announcements"));
+    list.innerHTML = items.length ? "" : "<p style='color:#6c7a92;font-size:0.85rem;'>No announcements yet.</p>";
+    items.slice().reverse().forEach((a, ri) => {
+      const i = items.length - 1 - ri;
+      const el = document.createElement("div"); el.className = "ann-item";
+      el.innerHTML = `<div><div class="ann-text">${a.text}</div><div class="ann-meta">${a.class} · ${a.date}</div></div>
+        <span class="rm" onclick="removeAnn(${i})">✕</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+  function postAnnouncement() {
+    const text = document.getElementById("annInput").value.trim(); if (!text) return;
+    const items = load(SK("announcements"));
+    items.push({ text, class: document.getElementById("annClass").value, date: new Date().toLocaleDateString() });
+    save(SK("announcements"), items);
+    document.getElementById("annInput").value = "";
+    renderAnnouncements();
+  }
+  function removeAnn(i) {
+    const items = load(SK("announcements")); items.splice(i,1);
+    save(SK("announcements"), items); renderAnnouncements();
+  }
+
+  // ── Resources ──────────────────────────────────────────
+  function renderResources() {
+    const list = document.getElementById("resList");
+    const items = load(SK("resources"));
+    list.innerHTML = items.length ? "" : "<p style='color:#6c7a92;font-size:0.85rem;'>No resources shared yet.</p>";
+    items.slice().reverse().forEach((r, ri) => {
+      const i = items.length - 1 - ri;
+      const el = document.createElement("div"); el.className = "res-item";
+      el.innerHTML = `<div><div class="res-name">${r.title}</div><div class="res-meta">${r.link} · ${r.date}</div></div>
+        <span class="rm" onclick="removeRes(${i})">✕</span>`;
+      list.appendChild(el);
+    });
+    updateStats();
+  }
+  function shareResource() {
+    const title = document.getElementById("resTitle").value.trim(); if (!title) return;
+    const items = load(SK("resources"));
+    items.push({ title, link: document.getElementById("resLink").value.trim(), date: new Date().toLocaleDateString() });
+    save(SK("resources"), items);
+    document.getElementById("resTitle").value = "";
+    document.getElementById("resLink").value = "";
+    renderResources();
+  }
+  function removeRes(i) {
+    const items = load(SK("resources")); items.splice(i,1);
+    save(SK("resources"), items); renderResources();
+  }
+
+  // ── Notes ──────────────────────────────────────────────
+  function renderNotes() {
+    const list = document.getElementById("noteList");
+    const notes = load(TK("notes"));
+    list.innerHTML = notes.length ? "" : "<p style='color:#6c7a92;font-size:0.85rem;'>No notes yet.</p>";
+    notes.forEach((n, i) => {
+      const el = document.createElement("div"); el.className = "note-item";
+      el.innerHTML = `<span>${n}</span><span class="rm" onclick="removeNote(${i})">✕</span>`;
+      list.appendChild(el);
+    });
+  }
+  function addNote() {
+    const input = document.getElementById("noteInput");
+    const val = input.value.trim(); if (!val) return;
+    const notes = load(TK("notes")); notes.push(val);
+    save(TK("notes"), notes); input.value = ""; renderNotes();
+  }
+  function removeNote(i) {
+    const notes = load(TK("notes")); notes.splice(i,1);
+    save(TK("notes"), notes); renderNotes();
+  }
+  document.getElementById("noteInput").addEventListener("keydown", e => { if(e.key==="Enter") addNote(); });
+
+  // Init
+  renderClasses(); renderPosted(); renderAnnouncements(); renderResources(); renderNotes();
 </script>
 {% endblock %}

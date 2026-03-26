@@ -1,0 +1,39 @@
+{
+  "module": "image-generator",
+  "module_label": "Image Generator",
+  "title": "untitled",
+  "prompt": "",
+  "animation_prompt": "",
+  "ai_profile": {
+    "style_tint": [
+      0,
+      0,
+      0
+    ],
+    "saturation": 1.0,
+    "motion_strength": 1.2080686725939866,
+    "motion_pattern": "drift",
+    "depth_strength": 1.2,
+    "stroke_color": "#6FA8FF",
+    "object_hint": "default",
+    "mood": "neutral"
+  },
+  "user": "Ella",
+  "session_id": "20260325_165621_untitled",
+  "created_at": "2026-03-25T16:56:22.036513",
+  "preview_kind": "image",
+  "generated": [
+    {
+      "type": "image",
+      "file": "20260325_165621_untitled_image-generator.png"
+    },
+    {
+      "type": "support",
+      "file": "20260325_165621_untitled_image-generator_v2.png"
+    },
+    {
+      "type": "support",
+      "file": "20260325_165621_untitled_image-generator_v3.png"
+    }
+  ]
+}

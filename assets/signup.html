@@ -9,123 +9,78 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-1: #02040a;
-      --bg-2: #081225;
-      --panel: rgba(6, 12, 24, 0.8);
-      --line: rgba(83, 136, 255, 0.24);
-      --text: #eaf2ff;
-      --muted: #8fa3be;
-      --accent-a: #3f8bff;
-      --accent-b: #2850d4;
-      --danger: #ff9a9a;
+      --bg-1: #02040a; --bg-2: #081225;
+      --panel: rgba(6,12,24,0.8); --line: rgba(83,136,255,0.24);
+      --text: #eaf2ff; --muted: #8fa3be;
+      --accent-a: #3f8bff; --accent-b: #2850d4; --danger: #ff9a9a;
     }
-
     * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Sora", "Segoe UI", sans-serif;
-      color: var(--text);
+      margin: 0; min-height: 100vh;
+      font-family: "Sora","Segoe UI",sans-serif; color: var(--text);
       background:
         radial-gradient(70rem 30rem at -10% -20%, #0f3573 8%, transparent 54%),
         radial-gradient(55rem 25rem at 115% 8%, #1a285a 4%, transparent 56%),
         linear-gradient(155deg, var(--bg-1), var(--bg-2));
-      display: grid;
-      place-items: center;
-      padding: 18px;
+      display: grid; place-items: center; padding: 18px;
     }
-
     .auth {
-      width: min(420px, 100%);
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      background: var(--panel);
-      backdrop-filter: blur(8px);
+      width: min(440px,100%);
+      border: 1px solid var(--line); border-radius: 30px;
+      background: var(--panel); backdrop-filter: blur(8px);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 26px 72px rgba(0,0,0,0.5);
-      padding: 26px 22px 20px;
-      display: grid;
-      gap: 16px;
+      padding: 28px 24px 22px; display: grid; gap: 16px;
     }
-
-    .logo-wrap {
-      display: grid;
-      justify-items: center;
-      gap: 8px;
-    }
-
-    .logo-wrap img { width: 185px; }
-
-    .title {
-      margin: 8px 0 0;
-      text-align: center;
-      font-size: 1.7rem;
-    }
-
-    .subtitle {
-      margin: 0;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
+    .logo-wrap { display: grid; justify-items: center; gap: 8px; }
+    .logo-wrap img { width: 200px; }
+    .title { margin: 6px 0 0; text-align: center; font-size: 1.65rem; }
+    .subtitle { margin: 0; text-align: center; color: var(--muted); font-size: 0.93rem; }
     form { display: grid; gap: 11px; }
-
-    .field {
-      display: grid;
-      gap: 6px;
-    }
-
-    label {
-      font-size: 0.82rem;
-      color: #c7d8ef;
-    }
-
+    .field { display: grid; gap: 6px; }
+    label { font-size: 0.82rem; color: #c7d8ef; }
     input {
-      width: 100%;
-      border-radius: 11px;
-      border: 1px solid rgba(89, 127, 196, 0.28);
-      background: rgba(8, 16, 30, 0.9);
-      color: var(--text);
-      padding: 12px 12px;
-      outline: none;
+      width: 100%; border-radius: 11px;
+      border: 1px solid rgba(89,127,196,0.28);
+      background: rgba(8,16,30,0.9); color: var(--text);
+      padding: 12px; outline: none; font-family: inherit; font-size: 0.95rem;
     }
+    input:focus { border-color: rgba(103,146,232,0.72); box-shadow: 0 0 0 3px rgba(84,135,235,0.2); }
 
-    input:focus {
-      border-color: rgba(103, 146, 232, 0.72);
-      box-shadow: 0 0 0 3px rgba(84, 135, 235, 0.2);
+    /* Role selector */
+    .role-label { font-size: 0.82rem; color: #c7d8ef; margin-bottom: 2px; }
+    .role-toggle {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      border-radius: 11px; overflow: hidden;
+      border: 1px solid rgba(89,127,196,0.28);
     }
+    .role-toggle input[type="radio"] { display: none; }
+    .role-toggle label {
+      padding: 12px 8px; text-align: center; cursor: pointer;
+      font-size: 0.92rem; font-weight: 600; color: var(--muted);
+      background: rgba(8,16,30,0.9);
+      transition: background 0.18s, color 0.18s;
+      border: none; margin: 0;
+    }
+    .role-toggle label:first-of-type { border-right: 1px solid rgba(89,127,196,0.28); }
+    .role-toggle input[type="radio"]:checked + label {
+      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+      color: #eef4ff;
+    }
+    /* Green tint for student */
+    #role-student:checked + label { background: linear-gradient(135deg,#1db87a,#0e8a56); color: #eef4ff; }
 
     .btn {
-      margin-top: 6px;
-      border: 1px solid rgba(123, 171, 255, 0.42);
-      border-radius: 11px;
-      padding: 12px;
-      font-weight: 700;
-      color: #eef4ff;
-      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
-      cursor: pointer;
+      margin-top: 4px; border: 1px solid rgba(123,171,255,0.42);
+      border-radius: 11px; padding: 13px; font-weight: 700; font-size: 1rem;
+      color: #eef4ff; background: linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      cursor: pointer; transition: opacity 0.18s, transform 0.14s;
+      font-family: inherit;
     }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      color: var(--muted);
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 0.84rem;
-      margin-top: 4px;
-    }
-
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .row { display: flex; justify-content: space-between; color: var(--muted); gap: 8px; flex-wrap: wrap; font-size: 0.84rem; margin-top: 2px; }
     a { color: #8cb5ff; text-decoration: none; }
     a:hover { text-decoration: underline; }
-
-    .message {
-      min-height: 1.1rem;
-      color: var(--danger);
-      font-size: 0.88rem;
-      margin: 0;
-    }
+    .message { min-height: 1.1rem; color: var(--danger); font-size: 0.88rem; margin: 0; }
   </style>
 </head>
 <body>
@@ -133,31 +88,37 @@
     <div class="logo-wrap">
       <img src="/assets/logo.svg" alt="SkyScribble logo" />
     </div>
-
     <h1 class="title">Create account</h1>
-    <p class="subtitle">Start capturing your ideas today.</p>
+    <p class="subtitle">Choose your role to get started.</p>
 
     <form id="signupForm">
+      <div class="field">
+        <div class="role-label">I am a…</div>
+        <div class="role-toggle">
+          <input type="radio" name="role" id="role-student" value="student" checked />
+          <label for="role-student">🎒 Student</label>
+          <input type="radio" name="role" id="role-teacher" value="teacher" />
+          <label for="role-teacher">🏫 Teacher</label>
+        </div>
+      </div>
+
       <div class="field">
         <label for="name">Full name</label>
         <input id="name" name="name" type="text" required placeholder="Enter your full name" />
       </div>
-
       <div class="field">
         <label for="email">Email address</label>
         <input id="email" name="email" type="email" required placeholder="name@skyscribble.app" />
       </div>
-
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" minlength="6" required placeholder="Create a password" />
+        <input id="password" name="password" type="password" minlength="6" required placeholder="Create a password (min 6 chars)" />
       </div>
 
-      <button class="btn" type="submit">Sign Up</button>
+      <button class="btn" type="submit">Create Account</button>
     </form>
 
     <p id="message" class="message"></p>
-
     <div class="row">
       <span>Already have an account? <a href="/login">Sign In</a></span>
       <a href="/">Back to home</a>
@@ -169,43 +130,34 @@
     const message = document.getElementById("message");
 
     function getUsers() {
-      try {
-        return JSON.parse(localStorage.getItem("skyscribble_users") || "[]");
-      } catch {
-        return [];
-      }
+      try { return JSON.parse(localStorage.getItem("skyscribble_users") || "[]"); } catch { return []; }
     }
+    function saveUsers(u) { localStorage.setItem("skyscribble_users", JSON.stringify(u)); }
 
-    function saveUsers(users) {
-      localStorage.setItem("skyscribble_users", JSON.stringify(users));
-    }
-
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
       message.textContent = "";
-
-      const formData = new FormData(form);
-      const name = String(formData.get("name") || "").trim();
-      const email = String(formData.get("email") || "").trim().toLowerCase();
-      const password = String(formData.get("password") || "");
+      const data = new FormData(form);
+      const name = String(data.get("name") || "").trim();
+      const email = String(data.get("email") || "").trim().toLowerCase();
+      const password = String(data.get("password") || "");
+      const role = String(data.get("role") || "student");
 
       const users = getUsers();
-      if (users.some((u) => u.email === email)) {
+      if (users.some(u => u.email === email)) {
         message.textContent = "An account already exists for this email.";
         return;
       }
 
-      const newUser = { name, email, password, createdAt: Date.now() };
+      const newUser = { name, email, password, role, createdAt: Date.now() };
       users.push(newUser);
       saveUsers(users);
 
       localStorage.setItem("skyscribble_session", JSON.stringify({
-        name: newUser.name,
-        email: newUser.email,
-        loggedInAt: Date.now()
+        name, email, role, loggedInAt: Date.now()
       }));
 
-      window.location.href = "/dashboard";
+      window.location.href = role === "student" ? "/student" : "/dashboard";
     });
   </script>
 </body>

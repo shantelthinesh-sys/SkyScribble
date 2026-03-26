@@ -28,7 +28,7 @@ def main():
         return
 
     web_app = create_web_app()
-    web_app.run(host=args.host, port=args.port, debug=False)
+    web_app.run(host=args.host, port=args.port, debug=True)
 
 
 if __name__ == "__main__":
