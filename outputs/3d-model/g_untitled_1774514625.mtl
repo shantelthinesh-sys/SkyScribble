@@ -1,0 +1,5 @@
+newmtl drawmat
+Ka 0.15 0.15 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+map_Kd g_untitled_1774514625_texture.png

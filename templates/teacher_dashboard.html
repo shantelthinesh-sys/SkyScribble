@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard · SkyScribble{% endblock %}
+{% block content %}
+<div class="main-panel animate-fadein">
+  <div class="dash-header">
+    <h1>Welcome, Teacher</h1>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-val">4</div><div class="stat-label">Classes</div></div>
+    <div class="stat-card"><div class="stat-val">12</div><div class="stat-label">Assignments</div></div>
+    <div class="stat-card"><div class="stat-val">8</div><div class="stat-label">Resources</div></div>
+  </div>
+  <div class="studio-row">
+    <a class="studio-btn" href="/draw?studio=image-generator">Image Generator</a>
+    <a class="studio-btn" href="/draw?studio=video-animation">Video Animation</a>
+    <a class="studio-btn" href="/draw?studio=3d-model">3D Model</a>
+  </div>
+</div>
+{% endblock %}
