@@ -1,0 +1,9 @@
+skyscribble-react/node_modules/
+skyscribble-react/dist/
+__pycache__/
+*.pyc
+*.pyo
+venv/
+server.log
+debug_out.txt
+*.cpython-*.pyc
